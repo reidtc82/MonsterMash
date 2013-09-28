@@ -22,6 +22,8 @@ namespace monsterMash
         MouseState mState;
         KeyboardState lastKeyboardState;
 
+        Animation player;
+
         private bool newGame;
 
         private Texture2D cursor;
@@ -72,6 +74,8 @@ namespace monsterMash
             lastKeyboardState = Keyboard.GetState();
             screen = 0;
             newGame = true;
+
+            player = new Animation(Content.Load<Texture2D>(@""),new Vector2(100,100),47,44);//texture,position,frame height,frame width
 
             base.Initialize();
         }
@@ -185,7 +189,8 @@ namespace monsterMash
 
         private void drawInGame()
         {
-            spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.White); 
+            spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
+            player.Draw(spriteBatch);
         }
 
         private void drawPreGame()
@@ -217,6 +222,7 @@ namespace monsterMash
                     this.Exit();
                 }
 
+                
 
             }else{
                 //dump back to pre game section
