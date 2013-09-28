@@ -75,7 +75,7 @@ namespace monsterMash
             screen = 0;
             newGame = true;
 
-            player = new Animation(Content.Load<Texture2D>(@""),new Vector2(100,100),47,44);//texture,position,frame height,frame width
+            player = new Animation(Content.Load<Texture2D>("textures/monsterBaseForward"),new Vector2(0,0),16,16);//texture,position,frame height,frame width
 
             base.Initialize();
         }
@@ -88,6 +88,9 @@ namespace monsterMash
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            //player = new Animation(Content.Load<Texture2D>(@"textures/monsterBaseForward"), new Vector2((GraphicsDevice.Viewport.Width / 2) - 8, (GraphicsDevice.Viewport.Height / 2) - 8), 16, 16);//texture,position,frame height,frame width
+
 
             cursor = Content.Load<Texture2D>(@"textures/cursor");
             logo = Content.Load<Texture2D>(@"textures/logo");

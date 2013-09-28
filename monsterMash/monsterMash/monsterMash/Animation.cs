@@ -14,7 +14,7 @@ namespace monsterMash
     class Animation
     {
         Texture2D texture;
-        Rectangle rectangle;
+        Rectangle frame;
         Vector2 position;
         Vector2 origin;
         Vector2 velocity;
@@ -36,36 +36,36 @@ namespace monsterMash
 
         public void Update(GameTime gameTime)
         {
-            rectangle = new Rectangle(currentFrame*frameWidth,0,frameWidth,frameHeight);
-            origin = new Vector2(rectangle.Width/2, rectangle.Height/2);
+            //frame = new Rectangle(currentFrame*frameWidth,0,frameWidth,frameHeight);
+            origin = new Vector2(frame.Width/2, frame.Height/2);
             position = position + velocity;
 
             //add for up and down
-            if(Keyboard.GetState().IsKeyDown(Keys.Right))
-            {
-                AnimateRight(gameTime);
-                velocity.X = 3;
-            }
-            else if (Keyboard.GetState().IsKeyDown(Keys.Left))
-            {
-                AnimateLeft(gameTime);
-                velocity.X = -3;
-            }
-            else
-            {
-                velocity = Vector2.Zero;
-            }
+            
         }
 
         //add more for up and down
-        public void AnimateRight(GameTime gameTime)
+        public void AnimateRest(GameTime gameTime)
+        {
+            timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds / 2;
+            if(timer > interval)
+            {
+                currentFrame++;
+                timer = 0;
+                if(currentFrame > 4)
+                {
+                    currentFrame = 0;
+                }
+            }
+        }
+        public void AnimateDown(GameTime gameTime)
         {
             timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds / 2;
             if (timer > interval)
             {
                 currentFrame++;
                 timer = 0;
-                if (currentFrame > 3)//change these values to accomodate new sprite sheet
+                if (currentFrame > 4)//change these values to accomodate new sprite sheet
                 {
                     currentFrame = 0;
                 }
@@ -79,16 +79,16 @@ namespace monsterMash
             {
                 currentFrame++;
                 timer = 0;
-                if (currentFrame > 7 || currentFrame < 4)//change these values to accomodate new sprite sheet
+                if (currentFrame > 16 || currentFrame < 13)//change these values to accomodate new sprite sheet
                 {
-                    currentFrame = 0;
+                    currentFrame = 13;
                 }
             }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, rectangle, Color.White, 0f, origin, 1.0f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, position, frame, Color.White, 0f, origin, 1.0f, SpriteEffects.None, 0);
         }
 
     }
