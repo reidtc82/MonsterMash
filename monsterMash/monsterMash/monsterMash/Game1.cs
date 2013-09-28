@@ -49,6 +49,10 @@ namespace monsterMash
         private Rectangle backButtonRect;
         private Rectangle backButtonBBox;
 
+        private double roundStartTime;
+        private double currRoundTime;
+        private SpriteFont timerFont;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -81,12 +85,13 @@ namespace monsterMash
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            cursor = Content.Load<Texture2D>("textures/cursor");
-            logo = Content.Load<Texture2D>("textures/logo");
-            startButton = Content.Load<Texture2D>("textures/startButton");
-            instButton = Content.Load<Texture2D>("textures/instButton");
-            exitButton = Content.Load<Texture2D>("textures/exitButton");
-            backButton = Content.Load<Texture2D>("textures/backButton");
+            cursor = Content.Load<Texture2D>(@"textures/cursor");
+            logo = Content.Load<Texture2D>(@"textures/logo");
+            startButton = Content.Load<Texture2D>(@"textures/startButton");
+            instButton = Content.Load<Texture2D>(@"textures/instButton");
+            exitButton = Content.Load<Texture2D>(@"textures/exitButton");
+            backButton = Content.Load<Texture2D>(@"textures/backButton");
+            timerFont = Content.Load<SpriteFont>(@"Fonts/timerFont");
             // TODO: use this.Content to load your game content here
         }
 
@@ -129,12 +134,12 @@ namespace monsterMash
             else if (screen == 2)
             {
                 //pre game, loading, processing generation
-                updatePreGame();
+                updatePreGame(gameTime);
             }
             else if (screen == 3)
             {
                 //in game
-                updateInGame(keyBoardState, lastKeyboardState);
+                updateInGame(gameTime, keyBoardState, lastKeyboardState);
             }
             // TODO: Add your update logic here
 
@@ -180,7 +185,7 @@ namespace monsterMash
 
         private void drawInGame()
         {
-            
+            spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.White); 
         }
 
         private void drawPreGame()
@@ -202,18 +207,24 @@ namespace monsterMash
             spriteBatch.Draw(exitButton, new Rectangle((int)exitBPOS.X, (int)exitBPOS.Y, exitButton.Width/2, exitButton.Height), exitButtonRect, Color.White);
         }
 
-        private void updateInGame(KeyboardState kState, KeyboardState lKState)
+        private void updateInGame(GameTime gameTime, KeyboardState kState, KeyboardState lKState)
         {
-            if(kState.IsKeyDown(Keys.Escape))
+            if(gameTime.TotalGameTime.TotalSeconds <= roundStartTime+120)
             {
-                this.Exit();
+                currRoundTime = (roundStartTime+120)-(gameTime.TotalGameTime.TotalSeconds);
+                if(kState.IsKeyDown(Keys.Escape))
+                {
+                    this.Exit();
+                }
+
+
+            }else{
+                //dump back to pre game section
+                screen = 2;
             }
-
-
-
         }
 
-        private void updatePreGame()
+        private void updatePreGame(GameTime gameTime)
         {
             if (newGame)
             {
@@ -243,6 +254,7 @@ namespace monsterMash
                 if (mState.LeftButton == ButtonState.Pressed && !mouseRect.Intersects(backButtonBBox))
                 {
                     screen = 3;
+                    roundStartTime = gameTime.TotalGameTime.TotalSeconds;
                 }
             }
             else
