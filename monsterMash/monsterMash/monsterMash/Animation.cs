@@ -40,6 +40,7 @@ namespace monsterMash
             origin = new Vector2(rectangle.Width/2, rectangle.Height/2);
             position = position + velocity;
 
+            //add for up and down
             if(Keyboard.GetState().IsKeyDown(Keys.Right))
             {
                 AnimateRight(gameTime);
@@ -56,6 +57,7 @@ namespace monsterMash
             }
         }
 
+        //add more for up and down
         public void AnimateRight(GameTime gameTime)
         {
             timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds / 2;
@@ -63,7 +65,7 @@ namespace monsterMash
             {
                 currentFrame++;
                 timer = 0;
-                if (currentFrame > 3)
+                if (currentFrame > 3)//change these values to accomodate new sprite sheet
                 {
                     currentFrame = 0;
                 }
@@ -77,7 +79,7 @@ namespace monsterMash
             {
                 currentFrame++;
                 timer = 0;
-                if (currentFrame > 7 || currentFrame < 4)
+                if (currentFrame > 7 || currentFrame < 4)//change these values to accomodate new sprite sheet
                 {
                     currentFrame = 0;
                 }
