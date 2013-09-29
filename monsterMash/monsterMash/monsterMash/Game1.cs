@@ -97,6 +97,8 @@ namespace monsterMash
             playerSprite.frameWidth = 32;
             playerSprite.maxFrames = 3+playerSprite.frameFirst;//like array index starts at 0
             playerSprite.frameIndex = 0;//like array index starts at 0
+            playerSprite.maxHP = 100;//set up max hp for round. Will change eventually from algorithm.
+            playerSprite.HP = playerSprite.maxHP;//set up hp for round
 
             cursor = Content.Load<Texture2D>(@"textures/cursor");
             logo = Content.Load<Texture2D>(@"textures/logo");
