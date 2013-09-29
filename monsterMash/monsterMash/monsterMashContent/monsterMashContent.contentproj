@@ -91,8 +91,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="textures\monsterBaseForward.png">
-      <Name>monsterBaseForward</Name>
+    <Compile Include="textures\monsterBase.png">
+      <Name>monsterBase</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

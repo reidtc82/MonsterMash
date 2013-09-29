@@ -22,7 +22,7 @@ namespace monsterMash
         MouseState mState;
         KeyboardState lastKeyboardState;
 
-        Animation player;
+        Monster playerSprite;
 
         private bool newGame;
 
@@ -59,6 +59,7 @@ namespace monsterMash
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
         }
 
         /// <summary>
@@ -70,12 +71,12 @@ namespace monsterMash
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            playerSprite = new Monster();
+            
             mState = Mouse.GetState();
             lastKeyboardState = Keyboard.GetState();
             screen = 0;
             newGame = true;
-
-            player = new Animation(Content.Load<Texture2D>("textures/monsterBaseForward"),new Vector2(0,0),16,16);//texture,position,frame height,frame width
 
             base.Initialize();
         }
@@ -90,7 +91,12 @@ namespace monsterMash
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             //player = new Animation(Content.Load<Texture2D>(@"textures/monsterBaseForward"), new Vector2((GraphicsDevice.Viewport.Width / 2) - 8, (GraphicsDevice.Viewport.Height / 2) - 8), 16, 16);//texture,position,frame height,frame width
-
+            playerSprite.LoadContent(this.Content, "textures/monsterBase");
+            playerSprite.position = new Vector2((GraphicsDevice.Viewport.Width / 2) - 16, (GraphicsDevice.Viewport.Height / 2) - 16);
+            playerSprite.frameHeight = 32;
+            playerSprite.frameWidth = 32;
+            playerSprite.maxFrames = 3+playerSprite.frameFirst;//like array index starts at 0
+            playerSprite.frameIndex = 0;//like array index starts at 0
 
             cursor = Content.Load<Texture2D>(@"textures/cursor");
             logo = Content.Load<Texture2D>(@"textures/logo");
@@ -192,8 +198,10 @@ namespace monsterMash
 
         private void drawInGame()
         {
+            playerSprite.Draw(this.spriteBatch);
+
             spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
-            player.Draw(spriteBatch);
+            
         }
 
         private void drawPreGame()
@@ -225,6 +233,7 @@ namespace monsterMash
                     this.Exit();
                 }
 
+                playerSprite.Update(gameTime);
                 
 
             }else{
