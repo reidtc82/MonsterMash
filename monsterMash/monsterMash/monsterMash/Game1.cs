@@ -95,7 +95,7 @@ namespace monsterMash
             playerSprite.position = new Vector2((GraphicsDevice.Viewport.Width / 2) - 16, (GraphicsDevice.Viewport.Height / 2) - 16);
             playerSprite.frameHeight = 32;
             playerSprite.frameWidth = 32;
-            playerSprite.maxFrames = 3+playerSprite.frameFirst;//like array index starts at 0
+            playerSprite.maxFrames = 3;//like array index starts at 0
             playerSprite.frameIndex = 0;//like array index starts at 0
             playerSprite.maxHP = 100;//set up max hp for round. Will change eventually from algorithm.
             playerSprite.HP = playerSprite.maxHP;//set up hp for round

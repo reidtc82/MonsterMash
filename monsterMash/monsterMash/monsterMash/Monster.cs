@@ -93,6 +93,8 @@ namespace monsterMash
             }
             else
             {
+                //add taking damage around this whole section.
+
                 //resting states.
                 if(lastDirection == 4)
                 {
@@ -115,22 +117,36 @@ namespace monsterMash
                     {
                         playerState = 8;
                     }
-                    else if (lastDirection == 0)
+                    if (lastDirection == 0)
                     {
                         playerState = 9;
                     }
-                    else if (lastDirection == 12)
+                    if (lastDirection == 12)
                     {
                         playerState = 10;
                     }
-                    else if (lastDirection == 8)
+                    if (lastDirection == 8)
                     {
                         playerState = 11;
                     }
                 }
                 else
                 {
-
+                    //doesnt animate w,a,d only s? also doesnt continue animation after let go except for s.
+                    if(keyboardState.IsKeyDown(Keys.W))
+                    {
+                        playerState = 4;
+                    }else if(keyboardState.IsKeyDown(Keys.A))
+                    {
+                        playerState = 6;
+                    }else if(keyboardState.IsKeyDown(Keys.S))
+                    {
+                        playerState = 5;
+                    }
+                    else if (keyboardState.IsKeyDown(Keys.D))
+                    {
+                        playerState = 7;
+                    }
                 }
 
                 lastDirection = frameFirst;
@@ -139,6 +155,7 @@ namespace monsterMash
             frameFirst = (int)states[playerState].X;
             frameIndex = (int)states[playerState].Y;
 
+            maxFrames = 3 + frameFirst;
             elapsedFrameTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
             if (elapsedFrameTime >= frameRateInterval)
             {
