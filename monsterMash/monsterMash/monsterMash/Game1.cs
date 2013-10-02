@@ -23,6 +23,8 @@ namespace monsterMash
         KeyboardState lastKeyboardState;
 
         Monster playerSprite;
+        const int maxTiles = 64;
+        Tile[,] tiles = new Tile[maxTiles,maxTiles];
 
         private bool newGame;
 
@@ -72,7 +74,15 @@ namespace monsterMash
         {
             // TODO: Add your initialization logic here
             playerSprite = new Monster();
-            
+
+            for (int x = 0; x < maxTiles; x++)
+            {
+                for (int y = 0; y < maxTiles; y++)
+                {
+                    tiles[x, y] = new Tile();
+                }
+            }
+
             mState = Mouse.GetState();
             lastKeyboardState = Keyboard.GetState();
             screen = 0;
@@ -99,6 +109,20 @@ namespace monsterMash
             playerSprite.frameIndex = 0;//like array index starts at 0
             playerSprite.maxHP = 100;//set up max hp for round. Will change eventually from algorithm.
             playerSprite.HP = playerSprite.maxHP;//set up hp for round
+
+            for (int x = 0; x < maxTiles; x++)
+            {
+                for (int y = 0; y < maxTiles; y++)
+                {
+                    tiles[x, y].LoadContent(this.Content, "textures/groundTile");
+                    tiles[x, y].frameWidth = 32;//for now
+                    tiles[x, y].frameHeight = 32;//for now
+                    tiles[x, y].position.X = tiles[x, y].frameWidth * x;
+                    tiles[x, y].position.Y = tiles[x, y].frameHeight * y;
+                    tiles[x, y].maxFrames = 0;//hopefully no animation for now as a test but I think I may animate eventually
+                    tiles[x, y].frameIndex = 0;//probably wont have more than this for this sprite sheet but maybe if I want different terrain types
+                }
+            }
 
             cursor = Content.Load<Texture2D>(@"textures/cursor");
             logo = Content.Load<Texture2D>(@"textures/logo");
@@ -200,6 +224,17 @@ namespace monsterMash
 
         private void drawInGame()
         {
+            for (int x = 0; x < maxTiles; x++)
+            {
+                for (int y = 0; y < maxTiles; y++)
+                {
+                    if (tiles[x, y].position.X > -64 && tiles[x, y].position.X < GraphicsDevice.Viewport.Width + 64 && tiles[x, y].position.Y > -64 && tiles[x, y].position.Y < GraphicsDevice.Viewport.Height + 64)
+                    {
+                        tiles[x, y].Draw(this.spriteBatch);
+                    }
+                }
+            }
+
             playerSprite.Draw(this.spriteBatch);
 
             spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
@@ -236,7 +271,33 @@ namespace monsterMash
                 }
 
                 playerSprite.Update(gameTime);
-                
+
+                for (int x = 0; x < maxTiles; x++)
+                {
+                    for (int y = 0; y < maxTiles; y++)
+                    {
+                        if (!kState.IsKeyDown(Keys.Space))
+                        {
+                            if (kState.IsKeyDown(Keys.W) && tiles[x, 0].position.Y <= playerSprite.position.Y)
+                            {
+                                tiles[x, y].position.Y++;
+                            }
+                            else if (kState.IsKeyDown(Keys.S) && tiles[x, maxTiles - 1].position.Y + tiles[x, maxTiles - 1].frameHeight >= playerSprite.position.Y + playerSprite.frameHeight)
+                            {
+                                tiles[x, y].position.Y--;
+                            }
+                            else if (kState.IsKeyDown(Keys.A) && tiles[0, y].position.X <= playerSprite.position.X)
+                            {
+                                tiles[x, y].position.X++;
+                            }
+                            else if (kState.IsKeyDown(Keys.D) && tiles[maxTiles - 1, y].position.X + tiles[maxTiles - 1, y].frameWidth >= playerSprite.position.X + playerSprite.frameWidth)
+                            {
+                                tiles[x, y].position.X--;
+                            }
+                            tiles[x, y].Update(gameTime);
+                        }
+                    }
+                }
 
             }else{
                 //dump back to pre game section

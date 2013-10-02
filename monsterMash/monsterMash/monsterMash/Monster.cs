@@ -21,6 +21,8 @@ namespace monsterMash
         int frameRateInterval = 90;
         public int currentFrame;
         public int frameFirst;
+        private  int thisDirection;
+        private  int oldDirection;
 
         public int HP
         {
@@ -132,14 +134,15 @@ namespace monsterMash
                 }
                 else
                 {
-                    //doesnt animate w,a,d only s? also doesnt continue animation after let go except for s.
                     if(keyboardState.IsKeyDown(Keys.W))
                     {
                         playerState = 4;
-                    }else if(keyboardState.IsKeyDown(Keys.A))
+                    }
+                    else if(keyboardState.IsKeyDown(Keys.A))
                     {
                         playerState = 6;
-                    }else if(keyboardState.IsKeyDown(Keys.S))
+                    }
+                    else if(keyboardState.IsKeyDown(Keys.S))
                     {
                         playerState = 5;
                     }
@@ -150,21 +153,22 @@ namespace monsterMash
                 }
 
                 lastDirection = frameFirst;
+                frameFirst = (int)states[playerState].X;
+                frameIndex = (int)states[playerState].Y;
             }
-
-            frameFirst = (int)states[playerState].X;
-            frameIndex = (int)states[playerState].Y;
 
             maxFrames = 3 + frameFirst;
             elapsedFrameTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
             if (elapsedFrameTime >= frameRateInterval)
             {
-                if (currentFrame < maxFrames)
+                if (currentFrame < maxFrames && thisDirection == oldDirection)
                 {
+                    thisDirection = frameFirst;
                     currentFrame++;
                 }
-                else
+                else if(currentFrame >= maxFrames || thisDirection != oldDirection)
                 {
+                    oldDirection = thisDirection;
                     currentFrame = frameFirst;
                 }
                 elapsedFrameTime = 0;
