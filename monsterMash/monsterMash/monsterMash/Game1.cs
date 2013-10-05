@@ -23,6 +23,9 @@ namespace monsterMash
         KeyboardState lastKeyboardState;
 
         Monster playerSprite;
+        const int maxHumans = 16;
+        Human[] people = new Human[maxHumans];
+
         const int maxTiles = 64;
         Tile[,] tiles = new Tile[maxTiles,maxTiles];
 
@@ -57,6 +60,8 @@ namespace monsterMash
         private double currRoundTime;
         private SpriteFont timerFont;
 
+        Random rand = new Random();
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -83,6 +88,11 @@ namespace monsterMash
                 }
             }
 
+            for (int x = 0; x < maxHumans; x++)
+            {
+                people[x] = new Human();
+            }
+
             mState = Mouse.GetState();
             lastKeyboardState = Keyboard.GetState();
             screen = 0;
@@ -100,7 +110,7 @@ namespace monsterMash
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            //player = new Animation(Content.Load<Texture2D>(@"textures/monsterBaseForward"), new Vector2((GraphicsDevice.Viewport.Width / 2) - 8, (GraphicsDevice.Viewport.Height / 2) - 8), 16, 16);//texture,position,frame height,frame width
+            //load player sprite
             playerSprite.LoadContent(this.Content, "textures/monsterBase");
             playerSprite.position = new Vector2((GraphicsDevice.Viewport.Width / 2) - 16, (GraphicsDevice.Viewport.Height / 2) - 16);
             playerSprite.frameHeight = 32;
@@ -110,6 +120,7 @@ namespace monsterMash
             playerSprite.maxHP = 100;//set up max hp for round. Will change eventually from algorithm.
             playerSprite.HP = playerSprite.maxHP;//set up hp for round
 
+            //loading map tiles
             for (int x = 0; x < maxTiles; x++)
             {
                 for (int y = 0; y < maxTiles; y++)
@@ -122,6 +133,21 @@ namespace monsterMash
                     tiles[x, y].maxFrames = 0;//hopefully no animation for now as a test but I think I may animate eventually
                     tiles[x, y].frameIndex = 0;//probably wont have more than this for this sprite sheet but maybe if I want different terrain types
                 }
+            }
+
+            //load humans
+            for (int x = 0; x < maxHumans; x++)
+            {
+                int randX = rand.Next((int)tiles[maxTiles-1,maxTiles-1].position.X);
+                int randY = rand.Next((int)tiles[maxTiles-1,maxTiles-1].position.Y);
+                int randIndex = rand.Next(4);
+                people[x].LoadContent(this.Content, "textures/humans");
+                people[x].frameWidth = 32;
+                people[x].frameHeight = 64;
+                people[x].position.X = randX;
+                people[x].position.Y = randY;
+                people[x].maxFrames = 3;
+                people[x].frameIndex = 0;
             }
 
             cursor = Content.Load<Texture2D>(@"textures/cursor");
@@ -235,6 +261,11 @@ namespace monsterMash
                 }
             }
 
+            for (int x = 0; x < maxHumans; x++)
+            {
+                people[x].Draw(this.spriteBatch);
+            }
+
             playerSprite.Draw(this.spriteBatch);
 
             spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
@@ -262,16 +293,18 @@ namespace monsterMash
 
         private void updateInGame(GameTime gameTime, KeyboardState kState, KeyboardState lKState)
         {
-            if(gameTime.TotalGameTime.TotalSeconds <= roundStartTime+120)
+            if(gameTime.TotalGameTime.TotalSeconds <= roundStartTime+30)
             {
-                currRoundTime = (roundStartTime+120)-(gameTime.TotalGameTime.TotalSeconds);
+                currRoundTime = (roundStartTime+31)-(gameTime.TotalGameTime.TotalSeconds);
                 if(kState.IsKeyDown(Keys.Escape))
                 {
                     this.Exit();
                 }
 
+                //update player sprite
                 playerSprite.Update(gameTime);
 
+                //update tiles
                 for (int x = 0; x < maxTiles; x++)
                 {
                     for (int y = 0; y < maxTiles; y++)
@@ -296,6 +329,31 @@ namespace monsterMash
                             }
                             tiles[x, y].Update(gameTime);
                         }
+                    }
+                }
+
+                //update humans
+                for (int x = 0; x < maxHumans; x++)
+                {
+                    if (!kState.IsKeyDown(Keys.Space))
+                    {
+                        if (kState.IsKeyDown(Keys.W))
+                        {
+                            people[x].position.Y++;
+                        }
+                        else if (kState.IsKeyDown(Keys.S))
+                        {
+                            people[x].position.Y--;
+                        }
+                        else if (kState.IsKeyDown(Keys.A))
+                        {
+                            people[x].position.X++;
+                        }
+                        else if (kState.IsKeyDown(Keys.D))
+                        {
+                            people[x].position.X--;
+                        }
+                        people[x].Update(gameTime);
                     }
                 }
 
