@@ -23,7 +23,7 @@ namespace monsterMash
         KeyboardState lastKeyboardState;
 
         Monster playerSprite;
-        const int maxHumans = 16;
+        const int maxHumans = 128;
         Human[] people = new Human[maxHumans];
 
         const int maxTiles = 64;
@@ -147,7 +147,7 @@ namespace monsterMash
                 people[x].position.X = randX;
                 people[x].position.Y = randY;
                 people[x].maxFrames = 3;
-                people[x].frameIndex = 0;
+                people[x].frameIndexOrigin = randIndex * 3;
             }
 
             cursor = Content.Load<Texture2D>(@"textures/cursor");
