@@ -14,9 +14,8 @@ namespace monsterMash
 
         public Vector2 position = new Vector2(0, 0);
         Vector2[] states = new Vector2[12];
-        bool scared;
 
-        private int frameRateInterval = 90;
+        private int frameRateInterval = 120;
         int currentFrame;
         int frameFirst;
         public int maxFrames;
@@ -31,49 +30,133 @@ namespace monsterMash
         private Texture2D mSpriteTexture;
 
         Random rand = new Random();
-        private bool hasState;
-        private int direction;
-        public int duration;
+        public int humanState
+        {
+            get;
+            set;
+        }
+        public bool hasState
+        {
+            get;
+            set;
+        }
+        private int direction
+        {
+            get;
+            set;
+        }
+        public int duration
+        {
+            get;
+            set;
+        }
+
+        public bool scared
+        {
+            get;
+            set;
+        }
 
         public void LoadContent(ContentManager contentManager, string assetName)
         {
             mSpriteTexture = contentManager.Load<Texture2D>(assetName);
             frameFirst = 0;
             currentFrame = frameFirst;
-            scared = false;//debug
-            hasState = false;//debug
+            hasState = false;
+            speed = 1;
         }
 
         public void Update(GameTime gameTime)//they all switch state at the same time
         {
-            duration--;
-            if (!scared)
+            if (scared)
             {
-                if (hasState)
+                speed = 2;
+                if (duration > 0)
                 {
-                    if (duration == 0)
+                    frameIndex = frameIndexOrigin + 2;
+                    if (humanState == 8)
                     {
-                        hasState = false;
+                        position.Y-=speed;
                     }
+                    else if (humanState == 9)
+                    {
+                        position.Y+=speed;
+                    }
+                    else if (humanState == 10)
+                    {
+                        position.X-=speed;
+                    }
+                    else if (humanState == 11)
+                    {
+                        position.X+=speed;
+                    }
+
+                    duration--;
                 }
                 else
                 {
-                    direction = (int)rand.Next(4);//up, down, left, or right
-                    duration = (int)rand.Next(2000);//some amoutn of milliseconds
-                    frameIndex = frameIndexOrigin + (int)rand.Next(2);//walk or stand
-                    hasState = true;
+                    scared = false;
+                    hasState = false;
                 }
             }
             else
             {
-                duration = 500;
-                frameIndex = frameIndexOrigin + 2;
-                if (duration == 0)
+                speed = 1;
+                if (duration > 0)
                 {
-                    scared = false;
+                    if (humanState <= 3)
+                    {
+                        frameIndex = frameIndexOrigin;
+                        if (humanState == 0)
+                        {
+                            frameFirst = 0;
+                        }
+                        else if (humanState == 1)
+                        {
+                            frameFirst = 4;
+                        }
+                        else if (humanState == 2)
+                        {
+                            frameFirst = 8;
+                        }
+                        else if (humanState == 3)
+                        {
+                            frameFirst = 12;
+                        }
+                    }
+                    else if (humanState > 3 && humanState <= 7)
+                    {
+                        frameIndex = frameIndexOrigin + 1;
+                        if (humanState == 4)
+                        {
+                            frameFirst = 0;
+                            position.Y+=speed;
+                        }
+                        else if (humanState == 5)
+                        {
+                            frameFirst = 4;
+                            position.Y-=speed;
+                        }
+                        else if (humanState == 6)
+                        {
+                            frameFirst = 8;
+                            position.X+=speed;
+                        }
+                        else if (humanState == 7)
+                        {
+                            frameFirst = 12;
+                            position.X-=speed;
+                        }
+                    }
+                    duration--;
+                }
+                else
+                {
+                    hasState = false;
                 }
             }
 
+            maxFrames = 3 + frameFirst;
             elapsedFrameTime += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
             if (elapsedFrameTime >= frameRateInterval)
             {

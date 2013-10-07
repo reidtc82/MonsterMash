@@ -23,6 +23,16 @@ namespace monsterMash
         KeyboardState lastKeyboardState;
 
         Monster playerSprite;
+
+        struct monsterProps
+        {
+            public float range;
+            public float spd;
+            public int thisScore;
+        }
+
+        monsterProps[] population = new monsterProps[20];
+
         const int maxHumans = 128;
         Human[] people = new Human[maxHumans];
 
@@ -62,6 +72,9 @@ namespace monsterMash
 
         Random rand = new Random();
 
+        int score;
+        int highestScore;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -78,6 +91,9 @@ namespace monsterMash
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            score = 0;
+            highestScore = 0;
+
             playerSprite = new Monster();
 
             for (int x = 0; x < maxTiles; x++)
@@ -97,6 +113,11 @@ namespace monsterMash
             lastKeyboardState = Keyboard.GetState();
             screen = 0;
             newGame = true;
+
+            for (int x = 0; x < population.Length; x++)
+            {
+                population[x] = new monsterProps();
+            }
 
             base.Initialize();
         }
@@ -268,12 +289,23 @@ namespace monsterMash
 
             playerSprite.Draw(this.spriteBatch);
 
-            spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
-            
+            if (currRoundTime >= 10)
+            {
+                spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
+            }
+            else
+            {
+                spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.Red);
+            }
+            spriteBatch.DrawString(timerFont, score.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10)+64, (int)(GraphicsDevice.Viewport.Height / 12)), Color.White);
+            spriteBatch.DrawString(timerFont, highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10)+128, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
         }
 
         private void drawPreGame()
         {
+            spriteBatch.DrawString(timerFont, score.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10) + 64, (int)(GraphicsDevice.Viewport.Height / 12)), Color.White);
+            spriteBatch.DrawString(timerFont, highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10) + 128, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
+        
             spriteBatch.Draw(startButton, new Rectangle((int)startBPOS.X, (int)startBPOS.Y, startButton.Width / 2, startButton.Height), startButtonRect, Color.White);
             spriteBatch.Draw(backButton, new Rectangle((int)backBPOS.X, (int)backBPOS.Y, backButton.Width / 2, backButton.Height), backButtonRect, Color.White);
         }
@@ -293,6 +325,7 @@ namespace monsterMash
 
         private void updateInGame(GameTime gameTime, KeyboardState kState, KeyboardState lKState)
         {
+            newGame = false;
             if(gameTime.TotalGameTime.TotalSeconds <= roundStartTime+30)
             {
                 currRoundTime = (roundStartTime+31)-(gameTime.TotalGameTime.TotalSeconds);
@@ -304,60 +337,122 @@ namespace monsterMash
                 //update player sprite
                 playerSprite.Update(gameTime);
 
-                //update tiles
+                //update tiles. Makes monster look like its moving.
                 for (int x = 0; x < maxTiles; x++)
                 {
                     for (int y = 0; y < maxTiles; y++)
                     {
-                        if (!kState.IsKeyDown(Keys.Space))
-                        {
+                        
                             if (kState.IsKeyDown(Keys.W) && tiles[x, 0].position.Y <= playerSprite.position.Y)
                             {
-                                tiles[x, y].position.Y++;
+                                tiles[x, y].position.Y+=playerSprite.speed;
                             }
                             else if (kState.IsKeyDown(Keys.S) && tiles[x, maxTiles - 1].position.Y + tiles[x, maxTiles - 1].frameHeight >= playerSprite.position.Y + playerSprite.frameHeight)
                             {
-                                tiles[x, y].position.Y--;
+                                tiles[x, y].position.Y-=playerSprite.speed;
                             }
                             else if (kState.IsKeyDown(Keys.A) && tiles[0, y].position.X <= playerSprite.position.X)
                             {
-                                tiles[x, y].position.X++;
+                                tiles[x, y].position.X += playerSprite.speed;
                             }
                             else if (kState.IsKeyDown(Keys.D) && tiles[maxTiles - 1, y].position.X + tiles[maxTiles - 1, y].frameWidth >= playerSprite.position.X + playerSprite.frameWidth)
                             {
-                                tiles[x, y].position.X--;
+                                tiles[x, y].position.X -= playerSprite.speed;
                             }
                             tiles[x, y].Update(gameTime);
-                        }
+                        
                     }
                 }
 
                 //update humans
                 for (int x = 0; x < maxHumans; x++)
                 {
-                    if (!kState.IsKeyDown(Keys.Space))
-                    {
+                        //moves people with the game board
                         if (kState.IsKeyDown(Keys.W))
                         {
-                            people[x].position.Y++;
+                            people[x].position.Y += playerSprite.speed;
                         }
                         else if (kState.IsKeyDown(Keys.S))
                         {
-                            people[x].position.Y--;
+                            people[x].position.Y -= playerSprite.speed;
                         }
                         else if (kState.IsKeyDown(Keys.A))
                         {
-                            people[x].position.X++;
+                            people[x].position.X += playerSprite.speed;
                         }
                         else if (kState.IsKeyDown(Keys.D))
                         {
-                            people[x].position.X--;
+                            people[x].position.X -= playerSprite.speed;
                         }
+
+                        //this is the people brain. It controls AI lol. They are 3 lines smart.
+                        if (!people[x].hasState)
+                        {
+                            people[x].humanState = rand.Next(8);
+                            people[x].duration = rand.Next(2000);
+                            people[x].hasState = true;
+                        }
+
+                        //following is collision with bounds of map
+                        if (people[x].position.X > tiles[maxTiles-1,maxTiles-1].position.X)
+                        {
+                            people[x].position.X = tiles[maxTiles-1, maxTiles-1].position.X;
+                            people[x].humanState = 7;
+                        }
+                        else if (people[x].position.X < tiles[0, 0].position.X)
+                        {
+                            people[x].position.X = tiles[0, 0].position.X;
+                            people[x].humanState = 6;
+                        }
+
+                        if (people[x].position.Y > tiles[maxTiles-1, maxTiles-1].position.Y)
+                        {
+                            people[x].position.Y = tiles[maxTiles-1, maxTiles-1].position.Y;
+                            people[x].humanState = 5;
+                        }
+                        else if (people[x].position.Y < tiles[0, 0].position.Y)
+                        {
+                            people[x].position.Y = tiles[0, 0].position.Y;
+                            people[x].humanState = 4;
+                        }
+
+                        //scaring people
+                        float agroRange = (float)Math.Sqrt(Math.Pow(Math.Abs((playerSprite.position.X+16)-(people[x].position.X+16)),2)+Math.Pow(Math.Abs((playerSprite.position.Y+32)-(people[x].position.Y+64)),2));//find the distance between playerSprite and people[x] 
+                        if(!people[x].scared && playerSprite.isScary && playerSprite.scareRange >= agroRange){
+                            score++;
+                            if (people[x].humanState == 0 || people[x].humanState == 4)
+                            {
+                                people[x].duration = 200;
+                                people[x].humanState = 9;
+                            }
+                            else if (people[x].humanState == 1 || people[x].humanState == 5)
+                            {
+                                people[x].duration = 200;
+                                people[x].humanState = 8;
+                            }
+                            else if (people[x].humanState == 2 || people[x].humanState == 6)
+                            {
+                                people[x].duration = 200;
+                                people[x].humanState = 11;
+                            }
+                            else if (people[x].humanState == 3 || people[x].humanState == 7)
+                            {
+                                people[x].duration = 200;
+                                people[x].humanState = 10;
+                            }
+                            people[x].scared = true;
+                               
+                        }
+
                         people[x].Update(gameTime);
-                    }
+                    
                 }
 
             }else{
+                if (score > highestScore)
+                {
+                    highestScore = score;
+                }
                 //dump back to pre game section
                 screen = 2;
             }
@@ -368,15 +463,31 @@ namespace monsterMash
             if (newGame)
             {
                 //create random primer set of monsters to select from
+                for (int x = 0; x < population.Length; x++)
+                {
+                    population[x].range = 10;
+                    population[x].spd = ((rand.Next(20))/10)+0.5f;
+                }
+
+                //int rndInd = rand.Next(20);
+
+                playerSprite.scareRange = population[0].range;
+                playerSprite.speed = population[0].spd;
+
+                score = 0;
+                highestScore = 0;
             }
             else
             {
+                population[0].thisScore = score;
                 //calculate and apply score to previously played monster
                 //arrange all monsters by score
                 //kill weakest
                 //breed monsters
                 //rearrange by score
                 //mutate
+                //assign properties to playersprite
+                score = 0;
             }
 
             backBPOS.X = ((GraphicsDevice.Viewport.Width / 6)*4) - backButton.Width / 4;

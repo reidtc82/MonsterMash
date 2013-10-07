@@ -24,6 +24,14 @@ namespace monsterMash
         private  int thisDirection;
         private  int oldDirection;
 
+        public bool isScary;
+
+        public float scareRange 
+        { 
+            get; 
+            set; 
+        }
+
         public int HP
         {
             get;
@@ -42,6 +50,7 @@ namespace monsterMash
             frameFirst = 0;
             currentFrame = frameFirst;
             lastDirection = frameFirst;
+            //scareRange = 128;
 
             states[0] = new Vector2(4,0);
             states[1] = new Vector2(0,0);
@@ -115,6 +124,7 @@ namespace monsterMash
                 //listen for input
                 if (keyboardState.IsKeyDown(Keys.Space))
                 {
+
                     if (lastDirection == 4)
                     {
                         playerState = 8;
@@ -172,6 +182,15 @@ namespace monsterMash
                     currentFrame = frameFirst;
                 }
                 elapsedFrameTime = 0;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.Space))
+            {
+                isScary = true;
+            }
+            else
+            {
+                isScary = false;
             }
         }
 

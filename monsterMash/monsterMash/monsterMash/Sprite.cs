@@ -23,6 +23,12 @@ namespace monsterMash
 
         private Texture2D mSpriteTexture;
 
+        public float speed
+        {
+            get;
+            set;
+        }
+
         public void LoadContent(ContentManager contentManager, string assetName)
         {
             mSpriteTexture = contentManager.Load<Texture2D>(assetName);
