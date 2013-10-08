@@ -44,6 +44,30 @@ namespace monsterMash
             set;
         }
 
+        public int stamina
+        {
+            get;
+            set;
+        }
+
+        public int stamRegen
+        {
+            get;
+            set;
+        }
+
+        public int scareCost
+        {
+            get;
+            set;
+        }
+
+        public int maxStamina
+        {
+            get;
+            set;
+        }
+
         public virtual void LoadContent(ContentManager contentManager, string assetName)
         {
             mSpriteTexture = contentManager.Load<Texture2D>(assetName);
@@ -184,13 +208,19 @@ namespace monsterMash
                 elapsedFrameTime = 0;
             }
 
-            if (keyboardState.IsKeyDown(Keys.Space))
+            if (keyboardState.IsKeyDown(Keys.Space) && stamina >= scareCost)
             {
                 isScary = true;
+                stamina = stamina - scareCost;
             }
             else
             {
                 isScary = false;
+            }
+
+            if (stamina < maxStamina)
+            {
+                stamina += stamRegen;
             }
         }
 

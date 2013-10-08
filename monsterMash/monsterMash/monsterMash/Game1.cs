@@ -29,6 +29,10 @@ namespace monsterMash
             public float range;
             public float spd;
             public int thisScore;
+            public int stam;
+            public int sReg;
+            public int cost;
+            public int maxStam;
         }
 
         monsterProps[] population = new monsterProps[20];
@@ -74,6 +78,8 @@ namespace monsterMash
 
         int score;
         int highestScore;
+        private bool selectedPop;
+        private bool runGACycle;
 
         public Game1()
         {
@@ -303,9 +309,16 @@ namespace monsterMash
 
         private void drawPreGame()
         {
-            spriteBatch.DrawString(timerFont, score.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10) + 64, (int)(GraphicsDevice.Viewport.Height / 12)), Color.White);
-            spriteBatch.DrawString(timerFont, highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10) + 128, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
-        
+            spriteBatch.DrawString(timerFont, "Last Score: "+score.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10), (int)(GraphicsDevice.Viewport.Height / 12)), Color.White);
+            spriteBatch.DrawString(timerFont, "Highest Score: "+highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10), (int)(GraphicsDevice.Viewport.Height / 12)+64), Color.White);
+
+            //spriteBatch.DrawString(timerFont, population[0].thisScore.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width/3, (int)GraphicsDevice.Viewport.Height/3), Color.White);
+            spriteBatch.DrawString(timerFont, "Scare Range: "+population[0].range.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)), Color.White);
+            spriteBatch.DrawString(timerFont, "Monster Speed: "+population[0].spd.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)+32), Color.White);
+            spriteBatch.DrawString(timerFont, "Max Stamina: " + population[0].maxStam.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)+64), Color.White);
+            spriteBatch.DrawString(timerFont, "Scare Cost: " + population[0].cost.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)+96), Color.White);
+            spriteBatch.DrawString(timerFont, "Stamina Regen Rate: " + population[0].sReg.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)+128), Color.White);
+
             spriteBatch.Draw(startButton, new Rectangle((int)startBPOS.X, (int)startBPOS.Y, startButton.Width / 2, startButton.Height), startButtonRect, Color.White);
             spriteBatch.Draw(backButton, new Rectangle((int)backBPOS.X, (int)backBPOS.Y, backButton.Width / 2, backButton.Height), backButtonRect, Color.White);
         }
@@ -454,6 +467,7 @@ namespace monsterMash
                     highestScore = score;
                 }
                 //dump back to pre game section
+                runGACycle = false;
                 screen = 2;
             }
         }
@@ -463,31 +477,55 @@ namespace monsterMash
             if (newGame)
             {
                 //create random primer set of monsters to select from
-                for (int x = 0; x < population.Length; x++)
+                if (!selectedPop)
                 {
-                    population[x].range = 10;
-                    population[x].spd = ((rand.Next(20))/10)+0.5f;
+                    for (int x = 0; x < population.Length; x++)
+                    {
+                        population[x].range = ((rand.Next(100)) / 10) + 0.5f;
+                        population[x].spd = ((rand.Next(20)) / 10) + 0.5f;
+                        population[x].maxStam = (rand.Next(1000)/10) + 1;
+                        population[x].cost = (rand.Next(100)/10) + 20;
+                        population[x].sReg = (rand.Next(20)/10)+1;
+                    }
+                    selectedPop = true;
                 }
 
                 //int rndInd = rand.Next(20);
 
-                playerSprite.scareRange = population[0].range;
                 playerSprite.speed = population[0].spd;
+                playerSprite.scareRange = population[0].range;
+                playerSprite.maxStamina = population[0].maxStam;
+                playerSprite.stamRegen = population[0].sReg;
+                playerSprite.scareCost = population[0].cost;
+                playerSprite.stamina = playerSprite.maxStamina;
 
                 score = 0;
                 highestScore = 0;
             }
             else
             {
-                population[0].thisScore = score;
-                //calculate and apply score to previously played monster
-                //arrange all monsters by score
-                //kill weakest
-                //breed monsters
-                //rearrange by score
-                //mutate
-                //assign properties to playersprite
-                score = 0;
+                if (!runGACycle)
+                {
+                    //calculate and apply score to previously played monster
+                    population[0].thisScore = score;
+                    //arrange all monsters by score
+                    //kill weakest
+                    //breed monsters
+                    //rearrange by score
+                    //mutate
+                    population[0].spd++;//debug
+                    population[0].range++;//debug
+                    //assign properties to playersprite
+                    playerSprite.speed = population[0].spd;
+                    playerSprite.scareRange = population[0].range;
+                    playerSprite.maxStamina = population[0].maxStam;
+                    playerSprite.stamRegen = population[0].sReg;
+                    playerSprite.scareCost = population[0].cost;
+                    playerSprite.stamina = playerSprite.maxStamina;
+
+                    score = 0;
+                    runGACycle = true;
+                }
             }
 
             backBPOS.X = ((GraphicsDevice.Viewport.Width / 6)*4) - backButton.Width / 4;
