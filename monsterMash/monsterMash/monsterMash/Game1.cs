@@ -305,6 +305,7 @@ namespace monsterMash
             }
             spriteBatch.DrawString(timerFont, score.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10)+64, (int)(GraphicsDevice.Viewport.Height / 12)), Color.White);
             spriteBatch.DrawString(timerFont, highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10)+128, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
+            spriteBatch.DrawString(timerFont, playerSprite.stamina.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10) + 192, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
         }
 
         private void drawPreGame()

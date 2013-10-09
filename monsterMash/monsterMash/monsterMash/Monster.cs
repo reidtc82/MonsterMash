@@ -25,6 +25,7 @@ namespace monsterMash
         private  int oldDirection;
 
         public bool isScary;
+        private double lastScare;
 
         public float scareRange 
         { 
@@ -208,20 +209,26 @@ namespace monsterMash
                 elapsedFrameTime = 0;
             }
 
-            if (keyboardState.IsKeyDown(Keys.Space) && stamina >= scareCost)
-            {
-                isScary = true;
-                stamina = stamina - scareCost;
-            }
-            else
-            {
-                isScary = false;
-            }
 
-            if (stamina < maxStamina)
+            if (gameTime.ElapsedGameTime.Milliseconds-lastScare >= 20)//this doesnt work copy from above. needs delay for scare 
             {
-                stamina += stamRegen;
+                lastScare = gameTime.ElapsedGameTime.Milliseconds;
+                if (keyboardState.IsKeyDown(Keys.Space) && stamina >= scareCost)
+                {
+                    isScary = true;
+                    stamina = stamina - scareCost;
+                }
+                else
+                {
+                    isScary = false;
+                }
             }
+                if (stamina < maxStamina)//need small delay or base this on time increment not update or make rate much smaller.
+                {
+                    stamina += stamRegen;
+                }
+            
+
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)
