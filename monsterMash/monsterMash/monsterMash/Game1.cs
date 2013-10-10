@@ -516,7 +516,7 @@ namespace monsterMash
                     //arrange all monsters by score
                     
                     //kill weakest
-                    for (int i = 0; i < 9; i++)
+                    for (int i = 0; i < 4; i++)
                     {
                         //nulls out the lowest scoring 8 individuals
                         population[19-i].thisScore = 0;
@@ -529,7 +529,25 @@ namespace monsterMash
                     }
                     
                     //breed monsters
-                    
+                    for(int i=0;i<3;i=i+2)
+                    {
+                        //offspring 1 - population[i] first half & population[i+1] second half
+                        population[19-i].thisScore = (population[i].thisScore/2)+(population[i+1].thisScore/2);
+                        population[19-i].range = population[i].range;//i
+                        population[19-i].spd = population[i].spd;//i
+                        population[19-i].maxStam = population[i].maxStam;//i
+                        population[19-i].cost = population[i+1].cost;//i+1
+                        population[19-i].sReg = population[i+1].sReg;//i+1
+                        population[19-i].rateScare = population[i+1].rateScare;//i+1
+                        //offspring 2 - population[i] second half & population[i+1] first half
+                        population[19-(i+1)].thisScore = (population[i].thisScore/2)+(population[i+1].thisScore/2);
+                        population[19-(i+1)].range = population[i+1].range;//i+1
+                        population[19-(i+1)].spd = population[i+1].spd;//i+1
+                        population[19-(i+1)].maxStam = population[i+1].maxStam;//i+1
+                        population[19-(i+1)].cost = population[i].cost;//i
+                        population[19-(i+1)].sReg = population[i].sReg;//i
+                        population[19-(i+1)].rateScare = population[i].rateScare;//i
+                    }
                     
                     
                     //mutate
