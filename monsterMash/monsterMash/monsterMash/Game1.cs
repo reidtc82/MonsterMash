@@ -33,6 +33,7 @@ namespace monsterMash
             public int sReg;
             public int cost;
             public int maxStam;
+            public int rateScare;
         }
 
         monsterProps[] population = new monsterProps[20];
@@ -319,6 +320,7 @@ namespace monsterMash
             spriteBatch.DrawString(timerFont, "Max Stamina: " + population[0].maxStam.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)+64), Color.White);
             spriteBatch.DrawString(timerFont, "Scare Cost: " + population[0].cost.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)+96), Color.White);
             spriteBatch.DrawString(timerFont, "Stamina Regen Rate: " + population[0].sReg.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)+128), Color.White);
+            spriteBatch.DrawString(timerFont, "Rate of Scare: " + population[0].rateScare.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3) + 160), Color.White);
 
             spriteBatch.Draw(startButton, new Rectangle((int)startBPOS.X, (int)startBPOS.Y, startButton.Width / 2, startButton.Height), startButtonRect, Color.White);
             spriteBatch.Draw(backButton, new Rectangle((int)backBPOS.X, (int)backBPOS.Y, backButton.Width / 2, backButton.Height), backButtonRect, Color.White);
@@ -486,7 +488,8 @@ namespace monsterMash
                         population[x].spd = ((rand.Next(20)) / 10) + 0.5f;
                         population[x].maxStam = (rand.Next(1000)/10) + 1;
                         population[x].cost = (rand.Next(100)/10) + 20;
-                        population[x].sReg = (rand.Next(20)/10)+1;
+                        population[x].sReg = (rand.Next(20)/10) + 1;
+                        population[x].rateScare = (rand.Next(100) / 10) + 20;
                     }
                     selectedPop = true;
                 }
@@ -499,6 +502,7 @@ namespace monsterMash
                 playerSprite.stamRegen = population[0].sReg;
                 playerSprite.scareCost = population[0].cost;
                 playerSprite.stamina = playerSprite.maxStamina;
+                playerSprite.ROS = population[0].rateScare;
 
                 score = 0;
                 highestScore = 0;
@@ -510,7 +514,19 @@ namespace monsterMash
                     //calculate and apply score to previously played monster
                     population[0].thisScore = score;
                     //arrange all monsters by score
+                    
                     //kill weakest
+                    for (int i = 0; i < 9; i++)
+                    {
+                        //make i
+                        population[x].thisScore = 0;
+                        population[x].range = 0;
+                        population[x].spd = 0;
+                        population[x].maxStam = 0;
+                        population[x].cost = 0;
+                        population[x].sReg = 0;
+                        population[x].rateScare = 0;
+                    }
                     //breed monsters
                     //rearrange by score
                     //mutate
@@ -523,6 +539,7 @@ namespace monsterMash
                     playerSprite.stamRegen = population[0].sReg;
                     playerSprite.scareCost = population[0].cost;
                     playerSprite.stamina = playerSprite.maxStamina;
+                    playerSprite.ROS = population[0].rateScare;
 
                     score = 0;
                     runGACycle = true;

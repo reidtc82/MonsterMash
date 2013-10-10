@@ -26,6 +26,7 @@ namespace monsterMash
 
         public bool isScary;
         private double lastScare;
+        private int regenDelay;
 
         public float scareRange 
         { 
@@ -69,6 +70,11 @@ namespace monsterMash
             set;
         }
 
+        public int ROS 
+        { 
+            get; 
+            set; 
+        }
         public virtual void LoadContent(ContentManager contentManager, string assetName)
         {
             mSpriteTexture = contentManager.Load<Texture2D>(assetName);
@@ -209,10 +215,9 @@ namespace monsterMash
                 elapsedFrameTime = 0;
             }
 
-
-            if (gameTime.ElapsedGameTime.Milliseconds-lastScare >= 20)//this doesnt work copy from above. needs delay for scare 
+            lastScare += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
+            if (lastScare >= ROS)//this doesnt work copy from above. needs delay for scare 
             {
-                lastScare = gameTime.ElapsedGameTime.Milliseconds;
                 if (keyboardState.IsKeyDown(Keys.Space) && stamina >= scareCost)
                 {
                     isScary = true;
@@ -222,11 +227,16 @@ namespace monsterMash
                 {
                     isScary = false;
                 }
+
+                lastScare = 0;
             }
-                if (stamina < maxStamina)//need small delay or base this on time increment not update or make rate much smaller.
-                {
-                    stamina += stamRegen;
-                }
+
+            regenDelay += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
+            if (stamina < maxStamina && regenDelay >= 10)//need small delay or base this on time increment not update or make rate much smaller.
+            {
+                stamina += stamRegen;
+                regenDelay = 0;
+            }
             
 
         }
