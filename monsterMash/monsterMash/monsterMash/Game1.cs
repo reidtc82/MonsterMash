@@ -527,8 +527,11 @@ namespace monsterMash
                         population[19-i].sReg = 0;
                         population[19-i].rateScare = 0;
                     }
+                    
                     //breed monsters
-                    //rearrange by score
+                    
+                    
+                    
                     //mutate
                     population[0].spd++;//debug
                     population[0].range++;//debug
