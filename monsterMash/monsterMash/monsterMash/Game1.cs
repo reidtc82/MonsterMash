@@ -518,14 +518,14 @@ namespace monsterMash
                     //kill weakest
                     for (int i = 0; i < 9; i++)
                     {
-                        //make i
-                        population[x].thisScore = 0;
-                        population[x].range = 0;
-                        population[x].spd = 0;
-                        population[x].maxStam = 0;
-                        population[x].cost = 0;
-                        population[x].sReg = 0;
-                        population[x].rateScare = 0;
+                        //nulls out the lowest scoring 8 individuals
+                        population[19-i].thisScore = 0;
+                        population[19-i].range = 0;
+                        population[19-i].spd = 0;
+                        population[19-i].maxStam = 0;
+                        population[19-i].cost = 0;
+                        population[19-i].sReg = 0;
+                        population[19-i].rateScare = 0;
                     }
                     //breed monsters
                     //rearrange by score
