@@ -551,8 +551,84 @@ namespace monsterMash
                     
                     
                     //mutate
-                    population[0].spd++;//debug
-                    population[0].range++;//debug
+                    
+                    //population[0].spd++;//debug
+                    //population[0].range++;//debug
+                    
+                    
+                    //aiming for 10 iterations of mutations to occur. 
+                    //each attribute has 20% chance to mutate, %50 after that to go up or 50% down by 0.1.
+                    for(int i=0;i<10;i++)
+                    {
+                        //10 times do this
+                        //grab random index for population
+                        int rPopIndex = rand.Next(19);//I think thats correct. I may need to change this to 20 if its not getting #19
+                        
+                        //population[rPopIndex] attributes - conditional on some rate will mutate randomly up or down a small fraction of a point
+                        int rAttr;
+                        
+                        rAttr = rand.Next(100);
+                        if(rAttr <= 10)
+                        {
+                            population[rPopIndex].range += 0.1;
+                        }
+                        else if(rAttr > 10 && rAttr <= 20)
+                        {
+                            population[rPopIndex].range -= 0.1;
+                        }
+                        
+                        rAttr = rand.Next(100);
+                        if(rAttr <= 10)
+                        {
+                            population[rPopIndex].spd += 0.1;
+                        }
+                        else if(rAttr > 10 && rAttr <= 20)
+                        {
+                            population[rPopIndex].spd -= 0.1;
+                        }
+                        
+                        rAttr = rand.Next(100);
+                        if(rAttr <= 10)
+                        {
+                            population[rPopIndex].maxStam += 0.1;
+                        }
+                        else if(rAttr > 10 && rAttr <= 20)
+                        {
+                            population[rPopIndex].maxStam -= 0.1;
+                        }
+                        
+                        rAttr = rand.Next(100);
+                        if(rAttr <= 10)
+                        {
+                            population[rPopIndex].cost += 0.1;
+                        }
+                        else if(rAttr > 10 && rAttr <= 20)
+                        {
+                            population[rPopIndex].cost -= 0.1;
+                        }
+                        
+                        rAttr = rand.Next(100);
+                        if(rAttr <= 10)
+                        {
+                            population[rPopIndex].sReg += 0.1;
+                        }
+                        else if(rAttr > 10 && rAttr <= 20)
+                        {
+                            population[rPopIndex].sReg -= 0.1;
+                        }
+                        
+                        rAttr = rand.Next(100);
+                        if(rAttr <= 10)
+                        {
+                            population[rPopIndex].rateScare += 0.1;
+                        }
+                        else if(rAttr > 10 && rAttr <= 20)
+                        {
+                            population[rPopIndex].rateScare -= 0.1;
+                        }
+                        
+                    }
+                    
                     //assign properties to playersprite
                     playerSprite.speed = population[0].spd;
                     playerSprite.scareRange = population[0].range;
@@ -561,8 +637,10 @@ namespace monsterMash
                     playerSprite.scareCost = population[0].cost;
                     playerSprite.stamina = playerSprite.maxStamina;
                     playerSprite.ROS = population[0].rateScare;
-
+                    
+                    //zero out score for next round
                     score = 0;
+                    //dont let it run GA again
                     runGACycle = true;
                 }
             }
