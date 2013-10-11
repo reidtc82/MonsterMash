@@ -513,7 +513,23 @@ namespace monsterMash
                 {
                     //calculate and apply score to previously played monster
                     population[0].thisScore = score;
+                    
                     //arrange all monsters by score
+                    bool hasFlipped = true;
+                    while(hasFlipped)
+                    {
+                        hasFlipped = false;
+                        for(int i=0;i<population.Length-1;i++)
+                        {
+                            if(population[i].thisScore > population[i+1].thisScore)
+                            {
+                                hasFlipped = true;
+                                int tempScore = population[i].thisScore;
+                                population[i].thisScore = population[i+1].thisScore;
+                                population[i+1].thisScore = tempScore;
+                            }
+                        }
+                    }
                     
                     //kill weakest
                     for (int i = 0; i < 4; i++)
@@ -551,10 +567,6 @@ namespace monsterMash
                     
                     
                     //mutate
-                    
-                    //population[0].spd++;//debug
-                    //population[0].range++;//debug
-                    
                     
                     //aiming for 10 iterations of mutations to occur. 
                     //each attribute has 20% chance to mutate, %50 after that to go up or 50% down by 0.1.
