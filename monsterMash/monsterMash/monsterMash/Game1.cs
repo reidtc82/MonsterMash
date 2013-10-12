@@ -582,61 +582,61 @@ namespace monsterMash
                         rAttr = rand.Next(100);
                         if(rAttr <= 10)
                         {
-                            population[rPopIndex].range += 0.1f;
+                            population[rPopIndex].range += 1;
                         }
                         else if(rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].range -= 0.1f;
+                            population[rPopIndex].range -= 1;
                         }
                         
                         rAttr = rand.Next(100);
                         if(rAttr <= 10)
                         {
-                            population[rPopIndex].spd += 0.1f;
+                            population[rPopIndex].spd += 0.5f;
                         }
                         else if(rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].spd -= 0.1f;
+                            population[rPopIndex].spd -= 0.5f;
                         }
                         
                         rAttr = rand.Next(100);
                         if(rAttr <= 10)
                         {
-                            population[rPopIndex].maxStam += 0.1f;
+                            population[rPopIndex].maxStam += 0.5f;
                         }
                         else if(rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].maxStam -= 0.1f;
+                            population[rPopIndex].maxStam -= 0.5f;
                         }
                         
                         rAttr = rand.Next(100);
                         if(rAttr <= 10)
                         {
-                            population[rPopIndex].cost += 0.1f;
+                            population[rPopIndex].cost += 0.5f;
                         }
                         else if(rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].cost -= 0.1f;
+                            population[rPopIndex].cost -= 0.5f;
                         }
                         
                         rAttr = rand.Next(100);
                         if(rAttr <= 10)
                         {
-                            population[rPopIndex].sReg += 0.1f;
+                            population[rPopIndex].sReg += 0.5f;
                         }
                         else if(rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].sReg -= 0.1f;
+                            population[rPopIndex].sReg -= 0.5f;
                         }
                         
                         rAttr = rand.Next(100);
                         if(rAttr <= 10)
                         {
-                            population[rPopIndex].rateScare += 0.1f;
+                            population[rPopIndex].rateScare += 0.5f;
                         }
                         else if(rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].rateScare -= 0.1f;
+                            population[rPopIndex].rateScare -= 0.5f;
                         }
                         
                     }
