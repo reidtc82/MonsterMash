@@ -46,31 +46,31 @@ namespace monsterMash
             set;
         }
 
-        public int stamina
+        public float stamina
         {
             get;
             set;
         }
 
-        public int stamRegen
+        public float stamRegen
         {
             get;
             set;
         }
 
-        public int scareCost
+        public float scareCost
         {
             get;
             set;
         }
 
-        public int maxStamina
+        public float maxStamina
         {
             get;
             set;
         }
 
-        public int ROS 
+        public float ROS 
         { 
             get; 
             set; 

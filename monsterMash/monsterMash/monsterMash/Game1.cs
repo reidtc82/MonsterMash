@@ -29,11 +29,11 @@ namespace monsterMash
             public float range;
             public float spd;
             public int thisScore;
-            public int stam;
-            public int sReg;
-            public int cost;
-            public int maxStam;
-            public int rateScare;
+            public float stam;
+            public float sReg;
+            public float cost;
+            public float maxStam;
+            public float rateScare;
         }
 
         monsterProps[] population = new monsterProps[20];
@@ -582,61 +582,61 @@ namespace monsterMash
                         rAttr = rand.Next(100);
                         if(rAttr <= 10)
                         {
-                            population[rPopIndex].range += 0.1;
+                            population[rPopIndex].range += 0.1f;
                         }
                         else if(rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].range -= 0.1;
+                            population[rPopIndex].range -= 0.1f;
                         }
                         
                         rAttr = rand.Next(100);
                         if(rAttr <= 10)
                         {
-                            population[rPopIndex].spd += 0.1;
+                            population[rPopIndex].spd += 0.1f;
                         }
                         else if(rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].spd -= 0.1;
+                            population[rPopIndex].spd -= 0.1f;
                         }
                         
                         rAttr = rand.Next(100);
                         if(rAttr <= 10)
                         {
-                            population[rPopIndex].maxStam += 0.1;
+                            population[rPopIndex].maxStam += 0.1f;
                         }
                         else if(rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].maxStam -= 0.1;
+                            population[rPopIndex].maxStam -= 0.1f;
                         }
                         
                         rAttr = rand.Next(100);
                         if(rAttr <= 10)
                         {
-                            population[rPopIndex].cost += 0.1;
+                            population[rPopIndex].cost += 0.1f;
                         }
                         else if(rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].cost -= 0.1;
+                            population[rPopIndex].cost -= 0.1f;
                         }
                         
                         rAttr = rand.Next(100);
                         if(rAttr <= 10)
                         {
-                            population[rPopIndex].sReg += 0.1;
+                            population[rPopIndex].sReg += 0.1f;
                         }
                         else if(rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].sReg -= 0.1;
+                            population[rPopIndex].sReg -= 0.1f;
                         }
                         
                         rAttr = rand.Next(100);
                         if(rAttr <= 10)
                         {
-                            population[rPopIndex].rateScare += 0.1;
+                            population[rPopIndex].rateScare += 0.1f;
                         }
                         else if(rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].rateScare -= 0.1;
+                            population[rPopIndex].rateScare -= 0.1f;
                         }
                         
                     }
