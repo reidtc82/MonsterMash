@@ -26,6 +26,7 @@ namespace monsterMash
 
         struct monsterProps
         {
+            public string ID;
             public float range;
             public float spd;
             public int thisScore;
@@ -52,12 +53,16 @@ namespace monsterMash
         private Texture2D instButton;
         private Texture2D exitButton;
         private Texture2D backButton;
+        private Texture2D stamBarLeftEnd;
+        private Texture2D stamBarCenterPart;
+        private Texture2D stamBarRightEnd;
 
         private Vector2 mousePOS;
         private Vector2 startBPOS;
         private Vector2 instBPOS;
         private Vector2 exitBPOS;
         private Vector2 backBPOS;
+        private Vector2 stamBarPOS;
 
         private int screen;
 
@@ -70,6 +75,9 @@ namespace monsterMash
         private Rectangle exitButtonBBox;
         private Rectangle backButtonRect;
         private Rectangle backButtonBBox;
+        private Rectangle stamBarLeftBox;
+        private Rectangle stamBarRightBox;
+        private Rectangle stamBarCenterBox;
 
         private double roundStartTime;
         private double currRoundTime;
@@ -81,6 +89,8 @@ namespace monsterMash
         int highestScore;
         private bool selectedPop;
         private bool runGACycle;
+        private monsterProps tempProps;
+        private bool scoreSet;
 
         public Game1()
         {
@@ -100,6 +110,7 @@ namespace monsterMash
             // TODO: Add your initialization logic here
             score = 0;
             highestScore = 0;
+            scoreSet = false;
 
             playerSprite = new Monster();
 
@@ -125,6 +136,30 @@ namespace monsterMash
             {
                 population[x] = new monsterProps();
             }
+
+            //debug section
+            #region
+            population[0].ID = "A";
+            population[1].ID = "B";
+            population[2].ID = "C";
+            population[3].ID = "D";
+            population[4].ID = "E";
+            population[5].ID = "F";
+            population[6].ID = "G";
+            population[7].ID = "H";
+            population[8].ID = "I";
+            population[9].ID = "J";
+            population[10].ID = "K";
+            population[11].ID = "L";
+            population[12].ID = "M";
+            population[13].ID = "N";
+            population[14].ID = "O";
+            population[15].ID = "P";
+            population[16].ID = "Q";
+            population[17].ID = "R";
+            population[18].ID = "S";
+            population[19].ID = "T";
+            #endregion
 
             base.Initialize();
         }
@@ -185,6 +220,12 @@ namespace monsterMash
             exitButton = Content.Load<Texture2D>(@"textures/exitButton");
             backButton = Content.Load<Texture2D>(@"textures/backButton");
             timerFont = Content.Load<SpriteFont>(@"Fonts/timerFont");
+
+            stamBarLeftEnd = Content.Load<Texture2D>(@"textures/stamBarLeft");
+            stamBarCenterPart = Content.Load<Texture2D>(@"textures/stamBarCenter");
+            stamBarRightEnd = Content.Load<Texture2D>(@"textures/stamBarRight");
+
+            stamBarLeftBox = new Rectangle(GraphicsDevice.Viewport.Width);
             // TODO: use this.Content to load your game content here
         }
 
@@ -296,6 +337,10 @@ namespace monsterMash
 
             playerSprite.Draw(this.spriteBatch);
 
+            spriteBatch.Draw(stamBarLeftEnd,stamBarLeftBox,Color.White);
+            spriteBatch.Draw(stamBarCenterPart,stamBarCenterBox,Color.White);
+            spriteBatch.Draw(stamBarRightEnd,stamBarRightBox,Color.White);
+
             if (currRoundTime >= 10)
             {
                 spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
@@ -315,12 +360,25 @@ namespace monsterMash
             spriteBatch.DrawString(timerFont, "Highest Score: "+highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10), (int)(GraphicsDevice.Viewport.Height / 12)+64), Color.White);
 
             //spriteBatch.DrawString(timerFont, population[0].thisScore.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width/3, (int)GraphicsDevice.Viewport.Height/3), Color.White);
-            spriteBatch.DrawString(timerFont, "Scare Range: "+population[0].range.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)), Color.White);
-            spriteBatch.DrawString(timerFont, "Monster Speed: "+population[0].spd.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)+32), Color.White);
-            spriteBatch.DrawString(timerFont, "Max Stamina: " + population[0].maxStam.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)+64), Color.White);
-            spriteBatch.DrawString(timerFont, "Scare Cost: " + population[0].cost.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)+96), Color.White);
-            spriteBatch.DrawString(timerFont, "Stamina Regen Rate: " + population[0].sReg.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3)+128), Color.White);
-            spriteBatch.DrawString(timerFont, "Rate of Scare: " + population[0].rateScare.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 3, (int)(GraphicsDevice.Viewport.Height / 3) + 160), Color.White);
+            spriteBatch.DrawString(timerFont, "Scare Range: " + population[0].range.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3)), Color.White);
+            spriteBatch.DrawString(timerFont, "Monster Speed: " + population[0].spd.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 32), Color.White);
+            spriteBatch.DrawString(timerFont, "Max Stamina: " + population[0].maxStam.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 64), Color.White);
+            spriteBatch.DrawString(timerFont, "Scare Cost: " + population[0].cost.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 96), Color.White);
+            spriteBatch.DrawString(timerFont, "Stamina Regen Rate: " + population[0].sReg.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 128), Color.White);
+            spriteBatch.DrawString(timerFont, "Rate of Scare: " + population[0].rateScare.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 160), Color.White);
+
+            //debug - need to make sure it is actually working and not just randomly mutating population[0]
+            for (int i = 0; i < population.Length; i++)
+            {
+                spriteBatch.DrawString(timerFont, population[i].thisScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60), (int)(GraphicsDevice.Viewport.Height * 0.1) + (i * 16)), Color.White);
+                spriteBatch.DrawString(timerFont, population[i].ID, new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60)+25, (int)(GraphicsDevice.Viewport.Height * 0.1) + (i * 16)), Color.White);
+                spriteBatch.DrawString(timerFont, population[i].range.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 50, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.White);
+                spriteBatch.DrawString(timerFont, population[i].spd.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 100, (int)(GraphicsDevice.Viewport.Height * 0.1) + (i * 16)), Color.White);
+                spriteBatch.DrawString(timerFont, population[i].maxStam.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 150, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.White);
+                spriteBatch.DrawString(timerFont, population[i].cost.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 200, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.White);
+                spriteBatch.DrawString(timerFont, population[i].sReg.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 250, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.White);
+                spriteBatch.DrawString(timerFont, population[i].rateScare.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 300, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.White);
+            }
 
             spriteBatch.Draw(startButton, new Rectangle((int)startBPOS.X, (int)startBPOS.Y, startButton.Width / 2, startButton.Height), startButtonRect, Color.White);
             spriteBatch.Draw(backButton, new Rectangle((int)backBPOS.X, (int)backBPOS.Y, backButton.Width / 2, backButton.Height), backButtonRect, Color.White);
@@ -342,9 +400,11 @@ namespace monsterMash
         private void updateInGame(GameTime gameTime, KeyboardState kState, KeyboardState lKState)
         {
             newGame = false;
-            if(gameTime.TotalGameTime.TotalSeconds <= roundStartTime+30)
+            if(gameTime.TotalGameTime.TotalSeconds <= roundStartTime+15)
             {
-                currRoundTime = (roundStartTime+31)-(gameTime.TotalGameTime.TotalSeconds);
+
+
+                currRoundTime = (roundStartTime+16)-(gameTime.TotalGameTime.TotalSeconds);
                 if(kState.IsKeyDown(Keys.Escape))
                 {
                     this.Exit();
@@ -471,12 +531,41 @@ namespace monsterMash
                 }
                 //dump back to pre game section
                 runGACycle = false;
+                scoreSet = false;
                 screen = 2;
             }
         }
 
         private void updatePreGame(GameTime gameTime)
         {
+            if (!scoreSet)
+            {
+                population[0].thisScore = score;
+                scoreSet = true;
+            }
+            //arrange all monsters by score
+            bool hasFlipped = true;
+            while (hasFlipped)
+            {
+                hasFlipped = false;
+                for (int i = 0; i < population.Length - 1; i++)
+                {
+                    int score1 = population[i].thisScore;
+                    int score2 = population[i + 1].thisScore;
+                    if (score1 < score2)
+                    {
+                        //this works as long as you keep scoring higher each time but as soon as you let a 0 score sneak through it breaks
+                        hasFlipped = true;
+                        tempProps = population[i];
+                        int tempScore = population[i].thisScore;
+                        population[i] = population[i + 1];
+                        population[i].thisScore = population[i + 1].thisScore;
+                        population[i + 1] = tempProps;
+                        population[i + 1].thisScore = tempScore;
+                    }
+                }
+            }
+
             if (newGame)
             {
                 //create random primer set of monsters to select from
@@ -486,8 +575,8 @@ namespace monsterMash
                     {
                         population[x].range = ((rand.Next(100)) / 10) + 0.5f;
                         population[x].spd = ((rand.Next(20)) / 10) + 0.5f;
-                        population[x].maxStam = (rand.Next(1000)/10) + 1;
                         population[x].cost = (rand.Next(100)/10) + 20;
+                        population[x].maxStam = (rand.Next(1000) / 10) + population[x].cost;
                         population[x].sReg = (rand.Next(20)/10) + 1;
                         population[x].rateScare = (rand.Next(100) / 10) + 20;
                     }
@@ -507,30 +596,10 @@ namespace monsterMash
                 score = 0;
                 highestScore = 0;
             }
-            else
+            else if(!newGame)
             {
                 if (!runGACycle)
-                {
-                    //calculate and apply score to previously played monster
-                    population[0].thisScore = score;
-                    
-                    //arrange all monsters by score
-                    bool hasFlipped = true;
-                    while(hasFlipped)
-                    {
-                        hasFlipped = false;
-                        for(int i=0;i<population.Length-1;i++)
-                        {
-                            if(population[i].thisScore > population[i+1].thisScore)
-                            {
-                                hasFlipped = true;
-                                int tempScore = population[i].thisScore;
-                                population[i].thisScore = population[i+1].thisScore;
-                                population[i+1].thisScore = tempScore;
-                            }
-                        }
-                    }
-                    
+                {                    
                     //kill weakest
                     for (int i = 0; i < 4; i++)
                     {
@@ -543,102 +612,103 @@ namespace monsterMash
                         population[19-i].sReg = 0;
                         population[19-i].rateScare = 0;
                     }
-                    
+
                     //breed monsters
-                    for(int i=0;i<3;i=i+2)
+                    #region
+                    for (int i = 0; i < 3; i = i + 2)
                     {
                         //offspring 1 - population[i] first half & population[i+1] second half
-                        population[19-i].thisScore = (population[i].thisScore/2)+(population[i+1].thisScore/2);
-                        population[19-i].range = population[i].range;//i
-                        population[19-i].spd = population[i].spd;//i
-                        population[19-i].maxStam = population[i].maxStam;//i
-                        population[19-i].cost = population[i+1].cost;//i+1
-                        population[19-i].sReg = population[i+1].sReg;//i+1
-                        population[19-i].rateScare = population[i+1].rateScare;//i+1
+                        population[19 - i].thisScore = (population[i].thisScore / 2) + (population[i + 1].thisScore / 2);
+                        population[19 - i].range = population[i].range;//i
+                        population[19 - i].spd = population[i].spd;//i
+                        population[19 - i].maxStam = population[i].maxStam;//i
+                        population[19 - i].cost = population[i + 1].cost;//i+1
+                        population[19 - i].sReg = population[i + 1].sReg;//i+1
+                        population[19 - i].rateScare = population[i + 1].rateScare;//i+1
                         //offspring 2 - population[i] second half & population[i+1] first half
-                        population[19-(i+1)].thisScore = (population[i].thisScore/2)+(population[i+1].thisScore/2);
-                        population[19-(i+1)].range = population[i+1].range;//i+1
-                        population[19-(i+1)].spd = population[i+1].spd;//i+1
-                        population[19-(i+1)].maxStam = population[i+1].maxStam;//i+1
-                        population[19-(i+1)].cost = population[i].cost;//i
-                        population[19-(i+1)].sReg = population[i].sReg;//i
-                        population[19-(i+1)].rateScare = population[i].rateScare;//i
+                        population[19 - (i + 1)].thisScore = (population[i].thisScore / 2) + (population[i + 1].thisScore / 2);
+                        population[19 - (i + 1)].range = population[i + 1].range;//i+1
+                        population[19 - (i + 1)].spd = population[i + 1].spd;//i+1
+                        population[19 - (i + 1)].maxStam = population[i + 1].maxStam;//i+1
+                        population[19 - (i + 1)].cost = population[i].cost;//i
+                        population[19 - (i + 1)].sReg = population[i].sReg;//i
+                        population[19 - (i + 1)].rateScare = population[i].rateScare;//i
                     }
-                    
+                    #endregion
                     
                     //mutate
                     
                     //aiming for 10 iterations of mutations to occur. 
                     //each attribute has 20% chance to mutate, %50 after that to go up or 50% down by 0.1.
-                    for(int i=0;i<10;i++)
+                    for (int i = 0; i < 10; i++)
                     {
                         //10 times do this
                         //grab random index for population
                         int rPopIndex = rand.Next(19);//I think thats correct. I may need to change this to 20 if its not getting #19
-                        
+
                         //population[rPopIndex] attributes - conditional on some rate will mutate randomly up or down a small fraction of a point
                         int rAttr;
-                        
+
                         rAttr = rand.Next(100);
-                        if(rAttr <= 10)
+                        if (rAttr <= 10)
                         {
                             population[rPopIndex].range += 1;
                         }
-                        else if(rAttr > 10 && rAttr <= 20)
+                        else if (rAttr > 10 && rAttr <= 20)
                         {
                             population[rPopIndex].range -= 1;
                         }
-                        
+
                         rAttr = rand.Next(100);
-                        if(rAttr <= 10)
+                        if (rAttr <= 10)
                         {
                             population[rPopIndex].spd += 0.5f;
                         }
-                        else if(rAttr > 10 && rAttr <= 20)
+                        else if (rAttr > 10 && rAttr <= 20)
                         {
                             population[rPopIndex].spd -= 0.5f;
                         }
-                        
+
                         rAttr = rand.Next(100);
-                        if(rAttr <= 10)
+                        if (rAttr <= 10)
                         {
                             population[rPopIndex].maxStam += 0.5f;
                         }
-                        else if(rAttr > 10 && rAttr <= 20)
+                        else if (rAttr > 10 && rAttr <= 20)
                         {
                             population[rPopIndex].maxStam -= 0.5f;
                         }
-                        
+
                         rAttr = rand.Next(100);
-                        if(rAttr <= 10)
+                        if (rAttr <= 10)
                         {
                             population[rPopIndex].cost += 0.5f;
                         }
-                        else if(rAttr > 10 && rAttr <= 20)
+                        else if (rAttr > 10 && rAttr <= 20)
                         {
                             population[rPopIndex].cost -= 0.5f;
                         }
-                        
+
                         rAttr = rand.Next(100);
-                        if(rAttr <= 10)
+                        if (rAttr <= 10)
                         {
                             population[rPopIndex].sReg += 0.5f;
                         }
-                        else if(rAttr > 10 && rAttr <= 20)
+                        else if (rAttr > 10 && rAttr <= 20)
                         {
                             population[rPopIndex].sReg -= 0.5f;
                         }
-                        
+
                         rAttr = rand.Next(100);
-                        if(rAttr <= 10)
+                        if (rAttr <= 10)
                         {
                             population[rPopIndex].rateScare += 0.5f;
                         }
-                        else if(rAttr > 10 && rAttr <= 20)
+                        else if (rAttr > 10 && rAttr <= 20)
                         {
                             population[rPopIndex].rateScare -= 0.5f;
                         }
-                        
+
                     }
                     
                     //assign properties to playersprite
@@ -651,7 +721,7 @@ namespace monsterMash
                     playerSprite.ROS = population[0].rateScare;
                     
                     //zero out score for next round
-                    score = 0;
+                    //score = 0;
                     //dont let it run GA again
                     runGACycle = true;
                 }
@@ -672,6 +742,8 @@ namespace monsterMash
                 {
                     screen = 3;
                     roundStartTime = gameTime.TotalGameTime.TotalSeconds;
+                    //zero out score for next round
+                    score = 0;
                 }
             }
             else
