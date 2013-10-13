@@ -105,13 +105,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="textures\humans.png">
-      <Name>humans</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="textures\stamBarLeft.png">
       <Name>stamBarLeft</Name>
       <Importer>TextureImporter</Importer>
@@ -135,6 +128,13 @@
   <ItemGroup>
     <Compile Include="textures\stamBar.png">
       <Name>stamBar</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="textures\humans.png">
+      <Name>humans</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

@@ -584,12 +584,12 @@ namespace monsterMash
                 {
                     for (int x = 0; x < population.Length; x++)
                     {
-                        population[x].range = ((rand.Next(100)) / 10) + 0.5f;
+                        population[x].range = ((rand.Next(100)) / 10) + 20;
                         population[x].spd = ((rand.Next(20)) / 10) + 0.5f;
                         population[x].cost = (rand.Next(100)/10) + 20;
-                        population[x].maxStam = (rand.Next(1000) / 10) + population[x].cost;
-                        population[x].sReg = (rand.Next(20)/10) + 1;
-                        population[x].rateScare = (rand.Next(100) / 10) + 20;
+                        population[x].maxStam = (rand.Next(1000) / 10) + (population[x].cost * 2);
+                        population[x].sReg = (rand.Next(20)/10);
+                        population[x].rateScare = (rand.Next(100) / 10) + 50;
                     }
                     selectedPop = true;
                 }
@@ -666,11 +666,11 @@ namespace monsterMash
                         rAttr = rand.Next(100);
                         if (rAttr <= 10)
                         {
-                            population[rPopIndex].range += 1;
+                            population[rPopIndex].range += 10;
                         }
                         else if (rAttr > 10 && rAttr <= 20)
                         {
-                            population[rPopIndex].range -= 1;
+                            population[rPopIndex].range -= 10;
                         }
 
                         rAttr = rand.Next(100);
