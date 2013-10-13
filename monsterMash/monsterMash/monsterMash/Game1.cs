@@ -56,6 +56,7 @@ namespace monsterMash
         private Texture2D stamBarLeftEnd;
         private Texture2D stamBarCenterPart;
         private Texture2D stamBarRightEnd;
+        private Texture2D stamBarFill;
 
         private Vector2 mousePOS;
         private Vector2 startBPOS;
@@ -78,6 +79,7 @@ namespace monsterMash
         private Rectangle stamBarLeftBox;
         private Rectangle stamBarRightBox;
         private Rectangle stamBarCenterBox;
+        private Rectangle stamBarFillBox;
 
         private double roundStartTime;
         private double currRoundTime;
@@ -224,8 +226,9 @@ namespace monsterMash
             stamBarLeftEnd = Content.Load<Texture2D>(@"textures/stamBarLeft");
             stamBarCenterPart = Content.Load<Texture2D>(@"textures/stamBarCenter");
             stamBarRightEnd = Content.Load<Texture2D>(@"textures/stamBarRight");
+            stamBarFill = Content.Load<Texture2D>(@"textures/stamBar");
 
-            stamBarLeftBox = new Rectangle(GraphicsDevice.Viewport.Width);
+            stamBarLeftBox = new Rectangle((int)(GraphicsDevice.Viewport.Width * 0.5f), (int)(GraphicsDevice.Viewport.Height * 0.08f), stamBarLeftEnd.Width, stamBarLeftEnd.Height);
             // TODO: use this.Content to load your game content here
         }
 
@@ -337,6 +340,14 @@ namespace monsterMash
 
             playerSprite.Draw(this.spriteBatch);
 
+            if(playerSprite.stamina < playerSprite.scareCost+5)
+            {
+                spriteBatch.Draw(stamBarFill,stamBarFillBox,Color.Red);
+            }
+            else
+            {
+                spriteBatch.Draw(stamBarFill,stamBarFillBox,Color.White);
+            }
             spriteBatch.Draw(stamBarLeftEnd,stamBarLeftBox,Color.White);
             spriteBatch.Draw(stamBarCenterPart,stamBarCenterBox,Color.White);
             spriteBatch.Draw(stamBarRightEnd,stamBarRightBox,Color.White);
@@ -351,7 +362,6 @@ namespace monsterMash
             }
             spriteBatch.DrawString(timerFont, score.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10)+64, (int)(GraphicsDevice.Viewport.Height / 12)), Color.White);
             spriteBatch.DrawString(timerFont, highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10)+128, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
-            spriteBatch.DrawString(timerFont, playerSprite.stamina.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10) + 192, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
         }
 
         private void drawPreGame()
@@ -412,6 +422,7 @@ namespace monsterMash
 
                 //update player sprite
                 playerSprite.Update(gameTime);
+                stamBarFillBox = new Rectangle(stamBarCenterBox.X - 2, stamBarCenterBox.Y + 6, (int)playerSprite.stamina, stamBarFill.Height);
 
                 //update tiles. Makes monster look like its moving.
                 for (int x = 0; x < maxTiles; x++)
@@ -592,6 +603,9 @@ namespace monsterMash
                 playerSprite.scareCost = population[0].cost;
                 playerSprite.stamina = playerSprite.maxStamina;
                 playerSprite.ROS = population[0].rateScare;
+
+                stamBarCenterBox = new Rectangle(stamBarLeftBox.X + stamBarLeftBox.Width, stamBarLeftBox.Y, (int)playerSprite.maxStamina - 4, stamBarCenterPart.Height);
+                stamBarRightBox = new Rectangle(stamBarCenterBox.X + stamBarCenterBox.Width, stamBarLeftBox.Y, stamBarRightEnd.Width, stamBarRightEnd.Height);
 
                 score = 0;
                 highestScore = 0;
