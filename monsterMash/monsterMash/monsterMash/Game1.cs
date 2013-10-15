@@ -604,8 +604,8 @@ namespace monsterMash
                 playerSprite.stamina = playerSprite.maxStamina;
                 playerSprite.ROS = population[0].rateScare;
 
-                stamBarCenterBox = new Rectangle(stamBarLeftBox.X + stamBarLeftBox.Width, stamBarLeftBox.Y, (int)playerSprite.maxStamina - 4, stamBarCenterPart.Height);
-                stamBarRightBox = new Rectangle(stamBarCenterBox.X + stamBarCenterBox.Width, stamBarLeftBox.Y, stamBarRightEnd.Width, stamBarRightEnd.Height);
+                //stamBarCenterBox = new Rectangle(stamBarLeftBox.X + stamBarLeftBox.Width, stamBarLeftBox.Y, (int)playerSprite.maxStamina - 4, stamBarCenterPart.Height);
+                //stamBarRightBox = new Rectangle(stamBarCenterBox.X + stamBarCenterBox.Width, stamBarLeftBox.Y, stamBarRightEnd.Width, stamBarRightEnd.Height);
 
                 score = 0;
                 highestScore = 0;
@@ -664,61 +664,61 @@ namespace monsterMash
                         int rAttr;
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 10)
+                        if (rAttr <= 20)
                         {
                             population[rPopIndex].range += 10;
                         }
-                        else if (rAttr > 10 && rAttr <= 20)
+                        else if (rAttr > 20 && rAttr <= 40)
                         {
                             population[rPopIndex].range -= 10;
                         }
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 10)
+                        if (rAttr <= 20)
                         {
                             population[rPopIndex].spd += 0.5f;
                         }
-                        else if (rAttr > 10 && rAttr <= 20)
+                        else if (rAttr > 20 && rAttr <= 40)
                         {
                             population[rPopIndex].spd -= 0.5f;
                         }
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 10)
+                        if (rAttr <= 20)
                         {
                             population[rPopIndex].maxStam += 0.5f;
                         }
-                        else if (rAttr > 10 && rAttr <= 20)
+                        else if (rAttr > 20 && rAttr <= 40)
                         {
                             population[rPopIndex].maxStam -= 0.5f;
                         }
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 10)
+                        if (rAttr <= 20)
                         {
                             population[rPopIndex].cost += 0.5f;
                         }
-                        else if (rAttr > 10 && rAttr <= 20)
+                        else if (rAttr > 20 && rAttr <= 40)
                         {
                             population[rPopIndex].cost -= 0.5f;
                         }
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 10)
+                        if (rAttr <= 20)
                         {
                             population[rPopIndex].sReg += 0.5f;
                         }
-                        else if (rAttr > 10 && rAttr <= 20)
+                        else if (rAttr > 20 && rAttr <= 40)
                         {
                             population[rPopIndex].sReg -= 0.5f;
                         }
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 10)
+                        if (rAttr <= 20)
                         {
                             population[rPopIndex].rateScare += 0.5f;
                         }
-                        else if (rAttr > 10 && rAttr <= 20)
+                        else if (rAttr > 20 && rAttr <= 40)
                         {
                             population[rPopIndex].rateScare -= 0.5f;
                         }
@@ -740,6 +740,9 @@ namespace monsterMash
                     runGACycle = true;
                 }
             }
+
+            stamBarCenterBox = new Rectangle(stamBarLeftBox.X + stamBarLeftBox.Width, stamBarLeftBox.Y, (int)playerSprite.maxStamina - 4, stamBarCenterPart.Height);
+            stamBarRightBox = new Rectangle(stamBarCenterBox.X + stamBarCenterBox.Width, stamBarLeftBox.Y, stamBarRightEnd.Width, stamBarRightEnd.Height);
 
             backBPOS.X = ((GraphicsDevice.Viewport.Width / 6)*4) - backButton.Width / 4;
             startBPOS.X = backBPOS.X + 104;
