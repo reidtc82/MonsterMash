@@ -12,18 +12,14 @@ namespace monsterMash
     {
         private Texture2D mParticleTexture;
 
-        private Vector2 position;
+        public Vector2 position;
         
         private int frameWidth;
         private int frameHeight;
 
         private float fade;
 
-        public Vector2 origin
-        {
-            get;
-            set;
-        }
+        private bool flipX = true;
 
         public float lifeSpan
         {
@@ -31,23 +27,55 @@ namespace monsterMash
             set;
         }
 
+        public float fadeRate
+        {
+            get;
+            set;
+        }
+
+        public Vector2 speed
+        {
+            get;
+            set;
+        }
+
+        public bool active 
+        { 
+            get; 
+            set; 
+        }
+
         public void LoadContent(ContentManager contentManager, string assetName)
         {
             mParticleTexture = contentManager.Load<Texture2D>(assetName);
             frameHeight = mParticleTexture.Height;
             frameWidth = mParticleTexture.Width;
-            position = origin;
             fade = lifeSpan;
+            active = false;
         }
 
         public void Update(GameTime gameTime)
         {
-            
+            if (fade > 0.0f)
+            {
+                fade -= fadeRate;
+                position.Y -= speed.Y;
+
+                position.X += speed.X;
+            }
+            else
+            {
+                fade = lifeSpan;
+                active = false;
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(mParticleTexture, new Rectangle((int)position.X, (int)position.Y, frameWidth, frameHeight), Color.White * fade);
+            if (active)
+            {
+                spriteBatch.Draw(mParticleTexture, new Rectangle((int)position.X, (int)position.Y, frameWidth, frameHeight), Color.White * fade);
+            }
         }
     }
 }

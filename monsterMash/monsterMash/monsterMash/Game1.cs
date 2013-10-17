@@ -39,11 +39,16 @@ namespace monsterMash
 
         monsterProps[] population = new monsterProps[20];
 
+        private monsterProps tempProps;
+
         const int maxHumans = 128;
         Human[] people = new Human[maxHumans];
 
         const int maxTiles = 64;
         Tile[,] tiles = new Tile[maxTiles,maxTiles];
+
+        const int maxFearticles = 128;
+        Particle[] fearticle = new Particle[maxFearticles];
 
         private bool newGame;
 
@@ -91,8 +96,9 @@ namespace monsterMash
         int highestScore;
         private bool selectedPop;
         private bool runGACycle;
-        private monsterProps tempProps;
         private bool scoreSet;
+        private float randRad;
+        private float randDis;
 
         public Game1()
         {
@@ -116,6 +122,7 @@ namespace monsterMash
 
             playerSprite = new Monster();
 
+            //Init Tiles
             for (int x = 0; x < maxTiles; x++)
             {
                 for (int y = 0; y < maxTiles; y++)
@@ -124,6 +131,7 @@ namespace monsterMash
                 }
             }
 
+            //Init people
             for (int x = 0; x < maxHumans; x++)
             {
                 people[x] = new Human();
@@ -134,6 +142,7 @@ namespace monsterMash
             screen = 0;
             newGame = true;
 
+            //Init population of monster properties
             for (int x = 0; x < population.Length; x++)
             {
                 population[x] = new monsterProps();
@@ -162,6 +171,12 @@ namespace monsterMash
             population[18].ID = "S";
             population[19].ID = "T";
             #endregion
+
+            //Init fearticles
+            for (int i = 0; i < maxFearticles; i++)
+            {
+                fearticle[i] = new Particle();
+            }
 
             base.Initialize();
         }
@@ -213,6 +228,14 @@ namespace monsterMash
                 people[x].position.Y = randY;
                 people[x].maxFrames = 3;
                 people[x].frameIndexOrigin = randIndex * 3;
+            }
+
+            //load fearticles
+            for (int i = 0; i < maxFearticles; i++)
+            {
+                fearticle[i].LoadContent(this.Content, "textures/fearticle");
+                fearticle[i].lifeSpan = 1f;
+                fearticle[i].speed = new Vector2(0, 0.25f);
             }
 
             cursor = Content.Load<Texture2D>(@"textures/cursor");
@@ -322,6 +345,7 @@ namespace monsterMash
 
         private void drawInGame()
         {
+            //Draw map
             for (int x = 0; x < maxTiles; x++)
             {
                 for (int y = 0; y < maxTiles; y++)
@@ -333,13 +357,22 @@ namespace monsterMash
                 }
             }
 
+            //Draw people
             for (int x = 0; x < maxHumans; x++)
             {
                 people[x].Draw(this.spriteBatch);
             }
 
+            //Draw playerSprite
             playerSprite.Draw(this.spriteBatch);
 
+            //Draw fearticles
+            for (int i = 0; i < maxFearticles; i++)
+            {
+                fearticle[i].Draw(this.spriteBatch);
+            }
+
+            //Draw Stam bar
             if(playerSprite.stamina < playerSprite.scareCost+5)
             {
                 spriteBatch.Draw(stamBarFill,stamBarFillBox,Color.Red);
@@ -352,6 +385,7 @@ namespace monsterMash
             spriteBatch.Draw(stamBarCenterPart,stamBarCenterBox,Color.White);
             spriteBatch.Draw(stamBarRightEnd,stamBarRightBox,Color.White);
 
+            //Draw Timer
             if (currRoundTime >= 10)
             {
                 spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
@@ -360,6 +394,8 @@ namespace monsterMash
             {
                 spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.Red);
             }
+
+            //Draw scoring
             spriteBatch.DrawString(timerFont, score.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10)+64, (int)(GraphicsDevice.Viewport.Height / 12)), Color.White);
             spriteBatch.DrawString(timerFont, highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10)+128, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
         }
@@ -531,8 +567,44 @@ namespace monsterMash
                                
                         }
 
-                        people[x].Update(gameTime);
-                    
+                        people[x].Update(gameTime);                      
+                }
+
+                //Spawn fearticles
+                for (int i = 0; i < maxFearticles; i++)
+                {
+                    if (!fearticle[i].active && playerSprite.isScary)
+                    {
+                        randRad = rand.Next(100);
+                        randDis = rand.Next((int)playerSprite.scareRange);
+                        fearticle[i].fadeRate = ((float)rand.Next(10) / 1000)+0.01f;
+                        fearticle[i].speed = new Vector2(0, ((float)rand.Next(10) * 0.1f)+0.01f);
+                        //fearticle[i].position = new Vector2(playerSprite.position.X+(playerSprite.frameWidth/2), playerSprite.position.Y+playerSprite.frameHeight);
+                        fearticle[i].position = new Vector2((float)(Math.Cos(randRad) * randDis) + (playerSprite.position.X + (playerSprite.frameWidth / 2)), (float)(Math.Sin(randRad) * randDis) + (playerSprite.position.Y + playerSprite.frameHeight));
+                        fearticle[i].active = true;
+                    }
+                    else
+                    {
+                        if (kState.IsKeyDown(Keys.W))
+                        {
+                            fearticle[i].position.Y += playerSprite.speed;
+                        }
+                        else if (kState.IsKeyDown(Keys.S))
+                        {
+                            fearticle[i].position.Y -= playerSprite.speed;
+                        }
+                        else if (kState.IsKeyDown(Keys.A))
+                        {
+                            fearticle[i].position.X += playerSprite.speed;
+                        }
+                        else if (kState.IsKeyDown(Keys.D))
+                        {
+                            fearticle[i].position.X -= playerSprite.speed;
+                        }
+                    }
+
+
+                    fearticle[i].Update(gameTime);
                 }
 
             }else{
