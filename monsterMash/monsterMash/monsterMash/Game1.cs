@@ -457,6 +457,7 @@ namespace monsterMash
                 }
 
                 //update player sprite
+                //trying to handle collision with boundaries - isCollide is not a good way to handle this
                 if ((playerSprite.position.X + playerSprite.frameWidth >= tiles[maxTiles - 1, maxTiles - 1].position.X + tiles[maxTiles - 1, maxTiles - 1].frameWidth && (playerSprite.playerState == 7 || playerSprite.playerState == 6)) ||
                     (playerSprite.position.X <= tiles[0, 0].position.X && (playerSprite.playerState == 7 || playerSprite.playerState == 6)) ||
                     (playerSprite.position.Y + playerSprite.frameHeight >= tiles[maxTiles - 1, maxTiles - 1].position.Y + tiles[maxTiles - 1, maxTiles - 1].frameHeight && (playerSprite.playerState == 4 || playerSprite.playerState == 5)) ||
