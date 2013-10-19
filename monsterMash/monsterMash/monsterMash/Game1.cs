@@ -457,7 +457,20 @@ namespace monsterMash
                 }
 
                 //update player sprite
+                if ((playerSprite.position.X + playerSprite.frameWidth >= tiles[maxTiles - 1, maxTiles - 1].position.X + tiles[maxTiles - 1, maxTiles - 1].frameWidth && (playerSprite.playerState == 7 || playerSprite.playerState == 6)) ||
+                    (playerSprite.position.X <= tiles[0, 0].position.X && (playerSprite.playerState == 7 || playerSprite.playerState == 6)) ||
+                    (playerSprite.position.Y + playerSprite.frameHeight >= tiles[maxTiles - 1, maxTiles - 1].position.Y + tiles[maxTiles - 1, maxTiles - 1].frameHeight && (playerSprite.playerState == 4 || playerSprite.playerState == 5)) ||
+                    (playerSprite.position.Y <= tiles[0, 0].position.Y && (playerSprite.playerState == 4 || playerSprite.playerState == 5)))
+                {
+                    playerSprite.isCollide = true;
+                }
+                else
+                {
+                    playerSprite.isCollide = false;
+                }
+
                 playerSprite.Update(gameTime);
+
                 stamBarFillBox = new Rectangle(stamBarCenterBox.X - 2, stamBarCenterBox.Y + 6, (int)playerSprite.stamina, stamBarFill.Height);
 
                 //update tiles. Makes monster look like its moving.
@@ -466,22 +479,23 @@ namespace monsterMash
                     for (int y = 0; y < maxTiles; y++)
                     {
                         
-                            if (kState.IsKeyDown(Keys.W) && tiles[x, 0].position.Y <= playerSprite.position.Y)
+                            if ((kState.IsKeyDown(Keys.W)||kState.IsKeyDown(Keys.Up)) && tiles[x, 0].position.Y <= playerSprite.position.Y)
                             {
                                 tiles[x, y].position.Y+=playerSprite.speed;
                             }
-                            else if (kState.IsKeyDown(Keys.S) && tiles[x, maxTiles - 1].position.Y + tiles[x, maxTiles - 1].frameHeight >= playerSprite.position.Y + playerSprite.frameHeight)
+                            else if ((kState.IsKeyDown(Keys.S)||kState.IsKeyDown(Keys.Down)) && tiles[x, maxTiles - 1].position.Y + tiles[x, maxTiles - 1].frameHeight >= playerSprite.position.Y + playerSprite.frameHeight)
                             {
                                 tiles[x, y].position.Y-=playerSprite.speed;
                             }
-                            else if (kState.IsKeyDown(Keys.A) && tiles[0, y].position.X <= playerSprite.position.X)
+                            else if ((kState.IsKeyDown(Keys.A)||kState.IsKeyDown(Keys.Left)) && tiles[0, y].position.X <= playerSprite.position.X)
                             {
                                 tiles[x, y].position.X += playerSprite.speed;
                             }
-                            else if (kState.IsKeyDown(Keys.D) && tiles[maxTiles - 1, y].position.X + tiles[maxTiles - 1, y].frameWidth >= playerSprite.position.X + playerSprite.frameWidth)
+                            else if ((kState.IsKeyDown(Keys.D) || kState.IsKeyDown(Keys.Right)) && tiles[maxTiles - 1, y].position.X + tiles[maxTiles - 1, y].frameWidth >= playerSprite.position.X + playerSprite.frameWidth)
                             {
                                 tiles[x, y].position.X -= playerSprite.speed;
                             }
+
                             tiles[x, y].Update(gameTime);
                         
                     }
@@ -491,22 +505,22 @@ namespace monsterMash
                 for (int x = 0; x < maxHumans; x++)
                 {
                         //moves people with the game board
-                        if (kState.IsKeyDown(Keys.W))
-                        {
-                            people[x].position.Y += playerSprite.speed;
-                        }
-                        else if (kState.IsKeyDown(Keys.S))
-                        {
-                            people[x].position.Y -= playerSprite.speed;
-                        }
-                        else if (kState.IsKeyDown(Keys.A))
-                        {
-                            people[x].position.X += playerSprite.speed;
-                        }
-                        else if (kState.IsKeyDown(Keys.D))
-                        {
-                            people[x].position.X -= playerSprite.speed;
-                        }
+                    if ((kState.IsKeyDown(Keys.W) || kState.IsKeyDown(Keys.Up)) && !playerSprite.isCollide)
+                    {
+                        people[x].position.Y += playerSprite.speed;
+                    }
+                    else if ((kState.IsKeyDown(Keys.S) || kState.IsKeyDown(Keys.Down)) && !playerSprite.isCollide)
+                    {    
+                        people[x].position.Y -= playerSprite.speed;
+                    }
+                    else if ((kState.IsKeyDown(Keys.A) || kState.IsKeyDown(Keys.Left)) && !playerSprite.isCollide)
+                    {
+                        people[x].position.X += playerSprite.speed;
+                    }
+                    else if ((kState.IsKeyDown(Keys.D) || kState.IsKeyDown(Keys.Right)) && !playerSprite.isCollide)
+                    {
+                        people[x].position.X -= playerSprite.speed;
+                    }
 
                         //this is the people brain. It controls AI lol. They are 3 lines smart.
                         if (!people[x].hasState)
@@ -585,19 +599,19 @@ namespace monsterMash
                     }
                     else
                     {
-                        if (kState.IsKeyDown(Keys.W))
+                        if (kState.IsKeyDown(Keys.W) || kState.IsKeyDown(Keys.Up))
                         {
                             fearticle[i].position.Y += playerSprite.speed;
                         }
-                        else if (kState.IsKeyDown(Keys.S))
+                        else if (kState.IsKeyDown(Keys.S) || kState.IsKeyDown(Keys.Down))
                         {
                             fearticle[i].position.Y -= playerSprite.speed;
                         }
-                        else if (kState.IsKeyDown(Keys.A))
+                        else if (kState.IsKeyDown(Keys.A) || kState.IsKeyDown(Keys.Left))
                         {
                             fearticle[i].position.X += playerSprite.speed;
                         }
-                        else if (kState.IsKeyDown(Keys.D))
+                        else if (kState.IsKeyDown(Keys.D) || kState.IsKeyDown(Keys.Right))
                         {
                             fearticle[i].position.X -= playerSprite.speed;
                         }

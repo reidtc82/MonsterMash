@@ -13,7 +13,7 @@ namespace monsterMash
     {
         Texture2D mSpriteTexture;
 
-        int playerState = 0;
+        public int playerState = 0;
         Vector2[] states = new Vector2[20];
         int lastDirection;
 
@@ -28,6 +28,8 @@ namespace monsterMash
         private double lastScare;
         private int regenDelay;
 
+        public bool isCollide;
+        
         public float scareRange 
         { 
             get; 
@@ -75,6 +77,7 @@ namespace monsterMash
             get; 
             set; 
         }
+
         public virtual void LoadContent(ContentManager contentManager, string assetName)
         {
             mSpriteTexture = contentManager.Load<Texture2D>(assetName);
@@ -175,19 +178,19 @@ namespace monsterMash
                 }
                 else
                 {
-                    if(keyboardState.IsKeyDown(Keys.W))
+                    if(keyboardState.IsKeyDown(Keys.W) || keyboardState.IsKeyDown(Keys.Up))
                     {
                         playerState = 4;
                     }
-                    else if(keyboardState.IsKeyDown(Keys.A))
+                    else if(keyboardState.IsKeyDown(Keys.A) || keyboardState.IsKeyDown(Keys.Left))
                     {
                         playerState = 6;
                     }
-                    else if(keyboardState.IsKeyDown(Keys.S))
+                    else if(keyboardState.IsKeyDown(Keys.S) || keyboardState.IsKeyDown(Keys.Down))
                     {
                         playerState = 5;
                     }
-                    else if (keyboardState.IsKeyDown(Keys.D))
+                    else if (keyboardState.IsKeyDown(Keys.D) || keyboardState.IsKeyDown(Keys.Right))
                     {
                         playerState = 7;
                     }
