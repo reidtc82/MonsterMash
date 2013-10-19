@@ -35,6 +35,7 @@ namespace monsterMash
             public float cost;
             public float maxStam;
             public float rateScare;
+            public float visiblity;
         }
 
         monsterProps[] population = new monsterProps[20];
@@ -46,6 +47,9 @@ namespace monsterMash
 
         const int maxTiles = 64;
         Tile[,] tiles = new Tile[maxTiles,maxTiles];
+
+        const int maxFOG = maxTiles;
+        Tile[,] foggies = new Tile[maxFOG,maxFOG];
 
         const int maxFearticles = 128;
         Particle[] fearticle = new Particle[maxFearticles];
@@ -127,7 +131,10 @@ namespace monsterMash
             {
                 for (int y = 0; y < maxTiles; y++)
                 {
+                    //Init ground tiles
                     tiles[x, y] = new Tile();
+                    //Init fog tiles
+                    foggies[x, y] = new Tile();
                 }
             }
 
@@ -205,6 +212,7 @@ namespace monsterMash
             {
                 for (int y = 0; y < maxTiles; y++)
                 {
+                    //Load ground tiles
                     tiles[x, y].LoadContent(this.Content, "textures/groundTile");
                     tiles[x, y].frameWidth = 32;//for now
                     tiles[x, y].frameHeight = 32;//for now
@@ -212,6 +220,15 @@ namespace monsterMash
                     tiles[x, y].position.Y = tiles[x, y].frameHeight * y;
                     tiles[x, y].maxFrames = 0;//hopefully no animation for now as a test but I think I may animate eventually
                     tiles[x, y].frameIndex = 0;//probably wont have more than this for this sprite sheet but maybe if I want different terrain types
+
+                    //Load fog tiles
+                    foggies[x, y].LoadContent(this.Content, "textures/fogOfWar");
+                    foggies[x, y].frameWidth = 64;//for now
+                    foggies[x, y].frameHeight = 64;//for now
+                    foggies[x, y].position.X = (foggies[x, y].frameWidth * x) - 16;
+                    foggies[x, y].position.Y = (foggies[x, y].frameHeight * y) - 16;
+                    foggies[x, y].maxFrames = 0;//hopefully no animation for now as a test but I think I may animate eventually
+                    foggies[x, y].frameIndex = 0;//probably wont have more than this for this sprite sheet but maybe if I want different terrain types
                 }
             }
 
@@ -372,6 +389,22 @@ namespace monsterMash
                 fearticle[i].Draw(this.spriteBatch);
             }
 
+            //Draw fog tiles
+            for (int x = 0; x < maxTiles; x++)
+            {
+                for (int y = 0; y < maxTiles; y++)
+                {
+                    if (foggies[x, y].position.X > -64 && foggies[x, y].position.X < GraphicsDevice.Viewport.Width + 64 && foggies[x, y].position.Y > -64 && foggies[x, y].position.Y < GraphicsDevice.Viewport.Height + 64)
+                    {
+                        float visRange = (float)Math.Sqrt(Math.Pow(Math.Abs((playerSprite.position.X + 16) - (foggies[x,y].position.X + 16)), 2) + Math.Pow(Math.Abs((playerSprite.position.Y + 32) - (foggies[x,y].position.Y + 64)), 2));//find the distance between playerSprite and foggies[x,y] 
+                        if (visRange > playerSprite.fieldOfView)
+                        {
+                            foggies[x, y].Draw(this.spriteBatch);
+                        }
+                    }
+                }
+            }
+
             //Draw Stam bar
             if(playerSprite.stamina < playerSprite.scareCost+5)
             {
@@ -483,21 +516,26 @@ namespace monsterMash
                             if ((kState.IsKeyDown(Keys.W)||kState.IsKeyDown(Keys.Up)) && tiles[x, 0].position.Y <= playerSprite.position.Y)
                             {
                                 tiles[x, y].position.Y+=playerSprite.speed;
+                                foggies[x, y].position.Y += playerSprite.speed;
                             }
                             else if ((kState.IsKeyDown(Keys.S)||kState.IsKeyDown(Keys.Down)) && tiles[x, maxTiles - 1].position.Y + tiles[x, maxTiles - 1].frameHeight >= playerSprite.position.Y + playerSprite.frameHeight)
                             {
                                 tiles[x, y].position.Y-=playerSprite.speed;
+                                foggies[x, y].position.Y -= playerSprite.speed;
                             }
                             else if ((kState.IsKeyDown(Keys.A)||kState.IsKeyDown(Keys.Left)) && tiles[0, y].position.X <= playerSprite.position.X)
                             {
                                 tiles[x, y].position.X += playerSprite.speed;
+                                foggies[x, y].position.X += playerSprite.speed;
                             }
                             else if ((kState.IsKeyDown(Keys.D) || kState.IsKeyDown(Keys.Right)) && tiles[maxTiles - 1, y].position.X + tiles[maxTiles - 1, y].frameWidth >= playerSprite.position.X + playerSprite.frameWidth)
                             {
                                 tiles[x, y].position.X -= playerSprite.speed;
+                                foggies[x, y].position.X -= playerSprite.speed;
                             }
 
                             tiles[x, y].Update(gameTime);
+                            foggies[x, y].Update(gameTime);
                         
                     }
                 }
@@ -677,6 +715,7 @@ namespace monsterMash
                         population[x].maxStam = (rand.Next(1000) / 10) + (population[x].cost * 2);
                         population[x].sReg = (rand.Next(20)/10);
                         population[x].rateScare = (rand.Next(100) / 10) + 50;
+                        population[x].visiblity = (rand.Next(1000) / 10) + 100;
                     }
                     selectedPop = true;
                 }
@@ -690,6 +729,7 @@ namespace monsterMash
                 playerSprite.scareCost = population[0].cost;
                 playerSprite.stamina = playerSprite.maxStamina;
                 playerSprite.ROS = population[0].rateScare;
+                playerSprite.fieldOfView = population[0].visiblity;
 
                 //stamBarCenterBox = new Rectangle(stamBarLeftBox.X + stamBarLeftBox.Width, stamBarLeftBox.Y, (int)playerSprite.maxStamina - 4, stamBarCenterPart.Height);
                 //stamBarRightBox = new Rectangle(stamBarCenterBox.X + stamBarCenterBox.Width, stamBarLeftBox.Y, stamBarRightEnd.Width, stamBarRightEnd.Height);
@@ -726,6 +766,7 @@ namespace monsterMash
                         population[19 - i].cost = (population[i].cost+population[i+1].cost)/2;//i+1
                         population[19 - i].sReg = (population[i].sReg+population[i+1].sReg)/2;//i+1
                         population[19 - i].rateScare = (population[i].rateScare+population[i+1].rateScare)/2;//i+1
+                        population[19 - i].visiblity = (population[i].visiblity+population[i+1].visiblity)/2;
                         //offspring 2 - population[i] second half & population[i+1] first half
                         population[19 - (i + 1)].thisScore = (population[i].thisScore + population[i + 1].thisScore)/2;
                         population[19 - (i + 1)].range = (population[i].range+population[i+1].range)/2;//i+1
@@ -734,6 +775,7 @@ namespace monsterMash
                         population[19 - (i + 1)].cost = (population[i].cost+population[i+1].cost)/2;//i
                         population[19 - (i + 1)].sReg = (population[i].sReg+population[i+1].sReg)/2;//i
                         population[19 - (i + 1)].rateScare = (population[i].rateScare + population[i + 1].rateScare)/2;//i
+                        population[19 - (i + 1)].visiblity = (population[i].visiblity+population[i+1].visiblity)/2;
                     }
                     #endregion
                     
@@ -810,6 +852,15 @@ namespace monsterMash
                             population[rPopIndex].rateScare -= 0.5f;
                         }
 
+                        rAttr = rand.Next(100);
+                        if (rAttr <= 20)
+                        {
+                            population[rPopIndex].visiblity += 10;
+                        }
+                        else if (rAttr > 20 && rAttr <= 40)
+                        {
+                            population[rPopIndex].visiblity -= 10;
+                        }
                     }
                     
                     //assign properties to playersprite
@@ -820,7 +871,8 @@ namespace monsterMash
                     playerSprite.scareCost = population[0].cost;
                     playerSprite.stamina = playerSprite.maxStamina;
                     playerSprite.ROS = population[0].rateScare;
-                    
+                    playerSprite.fieldOfView = population[0].visiblity;
+
                     //zero out score for next round
                     //score = 0;
                     //dont let it run GA again

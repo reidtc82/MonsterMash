@@ -78,6 +78,12 @@ namespace monsterMash
             set; 
         }
 
+        public float fieldOfView
+        {
+            get;
+            set;
+        }
+
         public virtual void LoadContent(ContentManager contentManager, string assetName)
         {
             mSpriteTexture = contentManager.Load<Texture2D>(assetName);
