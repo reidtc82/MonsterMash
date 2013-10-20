@@ -868,11 +868,11 @@ namespace monsterMash
                         rAttr = rand.Next(100);
                         if (rAttr <= 20)
                         {
-                            population[rPopIndex].visiblity += 10;
+                            population[rPopIndex].visiblity += 64;
                         }
                         else if (rAttr > 20 && rAttr <= 40)
                         {
-                            population[rPopIndex].visiblity -= 10;
+                            population[rPopIndex].visiblity -= 64;
                         }
                     }
                     
