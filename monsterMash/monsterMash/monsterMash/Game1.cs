@@ -48,7 +48,7 @@ namespace monsterMash
         const int maxTiles = 64;
         Tile[,] tiles = new Tile[maxTiles,maxTiles];
 
-        const int maxFOG = maxTiles;
+        const int maxFOG = maxTiles * 2;
         Tile[,] foggies = new Tile[maxFOG,maxFOG];
 
         const int maxFearticles = 128;
@@ -133,7 +133,14 @@ namespace monsterMash
                 {
                     //Init ground tiles
                     tiles[x, y] = new Tile();
-                    //Init fog tiles
+                }
+            }
+
+            //Init fog tiles
+            for (int x = 0; x < maxFOG; x++)
+            {
+                for (int y = 0; y < maxFOG; y++)
+                {
                     foggies[x, y] = new Tile();
                 }
             }
@@ -220,13 +227,19 @@ namespace monsterMash
                     tiles[x, y].position.Y = tiles[x, y].frameHeight * y;
                     tiles[x, y].maxFrames = 0;//hopefully no animation for now as a test but I think I may animate eventually
                     tiles[x, y].frameIndex = 0;//probably wont have more than this for this sprite sheet but maybe if I want different terrain types
+                }
+            }
 
-                    //Load fog tiles
+            //load fog tiles
+            for (int x = 0; x < maxFOG; x++)
+            {
+                for (int y = 0; y < maxFOG; y++)
+                {
                     foggies[x, y].LoadContent(this.Content, "textures/fogOfWar");
                     foggies[x, y].frameWidth = 64;//for now
                     foggies[x, y].frameHeight = 64;//for now
-                    foggies[x, y].position.X = (foggies[x, y].frameWidth * x) - 16;
-                    foggies[x, y].position.Y = (foggies[x, y].frameHeight * y) - 16;
+                    foggies[x, y].position.X = ((foggies[x, y].frameWidth/2) * x);
+                    foggies[x, y].position.Y = ((foggies[x, y].frameHeight/2) * y);
                     foggies[x, y].maxFrames = 0;//hopefully no animation for now as a test but I think I may animate eventually
                     foggies[x, y].frameIndex = 0;//probably wont have more than this for this sprite sheet but maybe if I want different terrain types
                 }
