@@ -431,10 +431,15 @@ namespace monsterMash
             spriteBatch.Draw(stamBarCenterPart,stamBarCenterBox,Color.White);
             spriteBatch.Draw(stamBarRightEnd,stamBarRightBox,Color.White);
 
+            //Stam bar label
+            spriteBatch.DrawString(timerFont, "Stamina", new Vector2(stamBarCenterBox.X, stamBarCenterBox.Y+32), Color.Yellow);
+
+
             //Draw Timer
+            spriteBatch.DrawString(timerFont, "Time:", new Vector2((int)(GraphicsDevice.Viewport.Width / 10)-50, (int)GraphicsDevice.Viewport.Height / 12), Color.Yellow);
             if (currRoundTime >= 10)
             {
-                spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
+                spriteBatch.DrawString(timerFont, Math.Floor(currRoundTime).ToString(), new Vector2((int)GraphicsDevice.Viewport.Width / 10, (int)GraphicsDevice.Viewport.Height / 12), Color.Yellow);
             }
             else
             {
@@ -442,35 +447,45 @@ namespace monsterMash
             }
 
             //Draw scoring
-            spriteBatch.DrawString(timerFont, score.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10)+64, (int)(GraphicsDevice.Viewport.Height / 12)), Color.White);
-            spriteBatch.DrawString(timerFont, highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10)+128, (int)GraphicsDevice.Viewport.Height / 12), Color.White);
+            spriteBatch.DrawString(timerFont, "Score:", new Vector2((int)(GraphicsDevice.Viewport.Width / 10) + 64, (int)GraphicsDevice.Viewport.Height / 12), Color.Yellow);
+            spriteBatch.DrawString(timerFont, score.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10) + 128, (int)(GraphicsDevice.Viewport.Height / 12)), Color.Yellow);
+            
+            spriteBatch.DrawString(timerFont, "High Score:", new Vector2((int)(GraphicsDevice.Viewport.Width / 10) + 160, (int)GraphicsDevice.Viewport.Height / 12), Color.Yellow);
+            spriteBatch.DrawString(timerFont, highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10) + 275, (int)GraphicsDevice.Viewport.Height / 12), Color.Yellow);
+
+            //copyright info ©
+            spriteBatch.DrawString(timerFont, "© 2013 Reid Case", new Vector2(GraphicsDevice.Viewport.Width * 0.75f, GraphicsDevice.Viewport.Height * 0.9f), Color.Yellow);
         }
 
         private void drawPreGame()
         {
-            spriteBatch.DrawString(timerFont, "Last Score: "+score.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10), (int)(GraphicsDevice.Viewport.Height / 12)), Color.White);
-            spriteBatch.DrawString(timerFont, "Highest Score: "+highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10), (int)(GraphicsDevice.Viewport.Height / 12)+64), Color.White);
+            spriteBatch.DrawString(timerFont, "Last Score: " + score.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10), (int)(GraphicsDevice.Viewport.Height / 12)), Color.Yellow);
+            spriteBatch.DrawString(timerFont, "Highest Score: " + highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10), (int)(GraphicsDevice.Viewport.Height / 12) + 64), Color.Yellow);
 
             //spriteBatch.DrawString(timerFont, population[0].thisScore.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width/3, (int)GraphicsDevice.Viewport.Height/3), Color.White);
-            spriteBatch.DrawString(timerFont, "Scare Range: " + population[0].range.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3)), Color.White);
-            spriteBatch.DrawString(timerFont, "Monster Speed: " + population[0].spd.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 32), Color.White);
-            spriteBatch.DrawString(timerFont, "Max Stamina: " + population[0].maxStam.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 64), Color.White);
-            spriteBatch.DrawString(timerFont, "Scare Cost: " + population[0].cost.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 96), Color.White);
-            spriteBatch.DrawString(timerFont, "Stamina Regen Rate: " + population[0].sReg.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 128), Color.White);
-            spriteBatch.DrawString(timerFont, "Rate of Scare: " + population[0].rateScare.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 160), Color.White);
+            spriteBatch.DrawString(timerFont, "Scare Range: " + population[0].range.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3)), Color.Yellow);
+            spriteBatch.DrawString(timerFont, "Monster Speed: " + population[0].spd.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 32), Color.Yellow);
+            spriteBatch.DrawString(timerFont, "Max Stamina: " + population[0].maxStam.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 64), Color.Yellow);
+            spriteBatch.DrawString(timerFont, "Scare Cost: " + population[0].cost.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 96), Color.Yellow);
+            spriteBatch.DrawString(timerFont, "Stamina Regen Rate: " + population[0].sReg.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 128), Color.Yellow);
+            spriteBatch.DrawString(timerFont, "Rate of Scare: " + population[0].rateScare.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 160), Color.Yellow);
+            spriteBatch.DrawString(timerFont, "Visibility range: " + population[0].visiblity.ToString(), new Vector2((int)GraphicsDevice.Viewport.Width * 0.25f, (int)(GraphicsDevice.Viewport.Height / 3) + 192), Color.Yellow);
 
             //debug - need to make sure it is actually working and not just randomly mutating population[0]
-            for (int i = 0; i < population.Length; i++)
-            {
-                spriteBatch.DrawString(timerFont, population[i].thisScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60), (int)(GraphicsDevice.Viewport.Height * 0.1) + (i * 16)), Color.White);
-                spriteBatch.DrawString(timerFont, population[i].ID, new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60)+25, (int)(GraphicsDevice.Viewport.Height * 0.1) + (i * 16)), Color.White);
-                spriteBatch.DrawString(timerFont, population[i].range.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 50, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.White);
-                spriteBatch.DrawString(timerFont, population[i].spd.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 100, (int)(GraphicsDevice.Viewport.Height * 0.1) + (i * 16)), Color.White);
-                spriteBatch.DrawString(timerFont, population[i].maxStam.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 150, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.White);
-                spriteBatch.DrawString(timerFont, population[i].cost.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 200, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.White);
-                spriteBatch.DrawString(timerFont, population[i].sReg.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 250, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.White);
-                spriteBatch.DrawString(timerFont, population[i].rateScare.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 300, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.White);
-            }
+            //for (int i = 0; i < population.Length; i++)
+            //{
+            //    spriteBatch.DrawString(timerFont, population[i].thisScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60), (int)(GraphicsDevice.Viewport.Height * 0.1) + (i * 16)), Color.Yellow);
+            //    spriteBatch.DrawString(timerFont, population[i].ID, new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60)+25, (int)(GraphicsDevice.Viewport.Height * 0.1) + (i * 16)), Color.Yellow);
+            //    spriteBatch.DrawString(timerFont, population[i].range.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 50, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.Yellow);
+            //    spriteBatch.DrawString(timerFont, population[i].spd.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 100, (int)(GraphicsDevice.Viewport.Height * 0.1) + (i * 16)), Color.Yellow);
+            //    spriteBatch.DrawString(timerFont, population[i].maxStam.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 150, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.Yellow);
+            //    spriteBatch.DrawString(timerFont, population[i].cost.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 200, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.Yellow);
+            //    spriteBatch.DrawString(timerFont, population[i].sReg.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 250, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.Yellow);
+            //    spriteBatch.DrawString(timerFont, population[i].rateScare.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width * 0.60) + 300, (int)(GraphicsDevice.Viewport.Height * 0.1)+(i*16)), Color.Yellow);
+            //}
+
+            //copyright info ©
+            spriteBatch.DrawString(timerFont, "© 2013 Reid Case", new Vector2(GraphicsDevice.Viewport.Width * 0.75f, GraphicsDevice.Viewport.Height * 0.9f), Color.Yellow);
 
             spriteBatch.Draw(startButton, new Rectangle((int)startBPOS.X, (int)startBPOS.Y, startButton.Width / 2, startButton.Height), startButtonRect, Color.White);
             spriteBatch.Draw(backButton, new Rectangle((int)backBPOS.X, (int)backBPOS.Y, backButton.Width / 2, backButton.Height), backButtonRect, Color.White);
@@ -478,6 +493,17 @@ namespace monsterMash
 
         private void drawInstructions()
         {
+            //Instructions
+            spriteBatch.DrawString(timerFont, "Monster Mash Instructions: ", new Vector2((int)GraphicsDevice.Viewport.Width * 0.04f, (int)(GraphicsDevice.Viewport.Height / 3)), Color.Yellow);
+            spriteBatch.DrawString(timerFont, "1. Boo! It's scaring time. Look at all the unsuspecting people.", new Vector2((int)GraphicsDevice.Viewport.Width * 0.04f, (int)(GraphicsDevice.Viewport.Height / 3) + 32), Color.Yellow);
+            spriteBatch.DrawString(timerFont, "2. Use the space bar to scare as many as you can before the timer runs out.", new Vector2((int)GraphicsDevice.Viewport.Width * 0.04f, (int)(GraphicsDevice.Viewport.Height / 3) + 64), Color.Yellow);
+            spriteBatch.DrawString(timerFont, "3. Get closer by using the W, A, S, D or the Arrow keys.", new Vector2((int)GraphicsDevice.Viewport.Width * 0.04f, (int)(GraphicsDevice.Viewport.Height / 3) + 96), Color.Yellow);
+            spriteBatch.DrawString(timerFont, "4. Watch out your monster tot may mustate between rounds.", new Vector2((int)GraphicsDevice.Viewport.Width * 0.04f, (int)(GraphicsDevice.Viewport.Height / 3) + 128), Color.Yellow);
+            spriteBatch.DrawString(timerFont, "5. Try to best your own personal score each round.", new Vector2((int)GraphicsDevice.Viewport.Width * 0.04f, (int)(GraphicsDevice.Viewport.Height / 3) + 160), Color.Yellow);
+
+            //copyright info ©
+            spriteBatch.DrawString(timerFont, "© 2013 Reid Case", new Vector2(GraphicsDevice.Viewport.Width * 0.75f, GraphicsDevice.Viewport.Height * 0.9f), Color.Yellow);
+
             spriteBatch.Draw(backButton, new Rectangle((int)backBPOS.X, (int)backBPOS.Y, backButton.Width/2, backButton.Height), backButtonRect, Color.White);
         }
 
@@ -487,6 +513,9 @@ namespace monsterMash
             spriteBatch.Draw(startButton, new Rectangle((int)startBPOS.X, (int)startBPOS.Y, startButton.Width/2, startButton.Height), startButtonRect, Color.White);
             spriteBatch.Draw(instButton, new Rectangle((int)instBPOS.X, (int)instBPOS.Y, instButton.Width/2, instButton.Height), instButtonRect, Color.White);
             spriteBatch.Draw(exitButton, new Rectangle((int)exitBPOS.X, (int)exitBPOS.Y, exitButton.Width/2, exitButton.Height), exitButtonRect, Color.White);
+
+            //copyright info ©
+            spriteBatch.DrawString(timerFont, "© 2013 Reid Case", new Vector2(GraphicsDevice.Viewport.Width * 0.75f, GraphicsDevice.Viewport.Height * 0.9f), Color.Yellow);
         }
 
         private void updateInGame(GameTime gameTime, KeyboardState kState, KeyboardState lKState)
@@ -642,7 +671,7 @@ namespace monsterMash
                     if (!fearticle[i].active && playerSprite.isScary)
                     {
                         randRad = rand.Next(100);
-                        randDis = rand.Next((int)playerSprite.scareRange);
+                        randDis = rand.Next((int)playerSprite.scareRange)+1;
                         fearticle[i].fadeRate = ((float)rand.Next(10) / 1000)+0.01f;
                         fearticle[i].speed = new Vector2(0, ((float)rand.Next(10) * 0.1f)+0.01f);
                         //fearticle[i].position = new Vector2(playerSprite.position.X+(playerSprite.frameWidth/2), playerSprite.position.Y+playerSprite.frameHeight);
@@ -818,21 +847,24 @@ namespace monsterMash
                         rAttr = rand.Next(100);
                         if (rAttr <= 20)
                         {
-                            population[rPopIndex].spd += 0.5f;
+                            population[rPopIndex].spd += 0.2f;
                         }
                         else if (rAttr > 20 && rAttr <= 40)
                         {
-                            population[rPopIndex].spd -= 0.5f;
+                            population[rPopIndex].spd -= 0.2f;
                         }
 
                         rAttr = rand.Next(100);
                         if (rAttr <= 20)
                         {
-                            population[rPopIndex].maxStam += 0.5f;
+                            population[rPopIndex].maxStam += 0.8f;
                         }
                         else if (rAttr > 20 && rAttr <= 40)
                         {
-                            population[rPopIndex].maxStam -= 0.5f;
+                            if(population[rPopIndex].maxStam >= 0.9f)
+                            {
+                                population[rPopIndex].maxStam -= 0.8f;
+                            }
                         }
 
                         rAttr = rand.Next(100);
@@ -848,11 +880,11 @@ namespace monsterMash
                         rAttr = rand.Next(100);
                         if (rAttr <= 20)
                         {
-                            population[rPopIndex].sReg += 0.5f;
+                            population[rPopIndex].sReg += 0.2f;
                         }
                         else if (rAttr > 20 && rAttr <= 40)
                         {
-                            population[rPopIndex].sReg -= 0.5f;
+                            population[rPopIndex].sReg -= 0.2f;
                         }
 
                         rAttr = rand.Next(100);
@@ -868,11 +900,14 @@ namespace monsterMash
                         rAttr = rand.Next(100);
                         if (rAttr <= 20)
                         {
-                            population[rPopIndex].visiblity += 64;
+                            population[rPopIndex].visiblity += 32;
                         }
                         else if (rAttr > 20 && rAttr <= 40)
                         {
-                            population[rPopIndex].visiblity -= 64;
+                            if (population[rPopIndex].visiblity >= 33)
+                            {
+                                population[rPopIndex].visiblity -= 32;
+                            }
                         }
                     }
                     
