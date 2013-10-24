@@ -829,7 +829,7 @@ namespace monsterMash
                     {
                         //10 times do this
                         //grab random index for population
-                        int rPopIndex = rand.Next(19);//I think thats correct. I may need to change this to 20 if its not getting #19
+                        int rPopIndex = 0;//try this with 0 -- rand.Next(19);//I think thats correct. I may need to change this to 20 if its not getting #19
 
                         //population[rPopIndex] attributes - conditional on some rate will mutate randomly up or down a small fraction of a point
                         int rAttr;
@@ -841,7 +841,10 @@ namespace monsterMash
                         }
                         else if (rAttr > 20 && rAttr <= 40)
                         {
-                            population[rPopIndex].range -= 10;
+                            if (population[rPopIndex].range > 11)
+                            {
+                                population[rPopIndex].range -= 10;
+                            }
                         }
 
                         rAttr = rand.Next(100);
