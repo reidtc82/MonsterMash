@@ -48,7 +48,7 @@ namespace monsterMash
         const int maxTiles = 64;
         Tile[,] tiles = new Tile[maxTiles,maxTiles];
 
-        const int maxFOG = maxTiles * 2;
+        const int maxFOG = maxTiles;
         Tile[,] foggies = new Tile[maxFOG,maxFOG];
 
         const int maxFearticles = 128;
@@ -238,8 +238,8 @@ namespace monsterMash
                     foggies[x, y].LoadContent(this.Content, "textures/fogOfWar");
                     foggies[x, y].frameWidth = 64;//for now
                     foggies[x, y].frameHeight = 64;//for now
-                    foggies[x, y].position.X = ((foggies[x, y].frameWidth/2) * x);
-                    foggies[x, y].position.Y = ((foggies[x, y].frameHeight/2) * y);
+                    foggies[x, y].position.X = foggies[x, y].frameWidth * x;
+                    foggies[x, y].position.Y = foggies[x, y].frameHeight * y;
                     foggies[x, y].maxFrames = 0;//hopefully no animation for now as a test but I think I may animate eventually
                     foggies[x, y].frameIndex = 0;//probably wont have more than this for this sprite sheet but maybe if I want different terrain types
                 }
@@ -558,27 +558,47 @@ namespace monsterMash
                             if ((kState.IsKeyDown(Keys.W)||kState.IsKeyDown(Keys.Up)) && tiles[x, 0].position.Y <= playerSprite.position.Y)
                             {
                                 tiles[x, y].position.Y+=playerSprite.speed;
-                                foggies[x, y].position.Y += playerSprite.speed;
                             }
                             else if ((kState.IsKeyDown(Keys.S)||kState.IsKeyDown(Keys.Down)) && tiles[x, maxTiles - 1].position.Y + tiles[x, maxTiles - 1].frameHeight >= playerSprite.position.Y + playerSprite.frameHeight)
                             {
                                 tiles[x, y].position.Y-=playerSprite.speed;
-                                foggies[x, y].position.Y -= playerSprite.speed;
                             }
                             else if ((kState.IsKeyDown(Keys.A)||kState.IsKeyDown(Keys.Left)) && tiles[0, y].position.X <= playerSprite.position.X)
                             {
                                 tiles[x, y].position.X += playerSprite.speed;
-                                foggies[x, y].position.X += playerSprite.speed;
                             }
                             else if ((kState.IsKeyDown(Keys.D) || kState.IsKeyDown(Keys.Right)) && tiles[maxTiles - 1, y].position.X + tiles[maxTiles - 1, y].frameWidth >= playerSprite.position.X + playerSprite.frameWidth)
                             {
                                 tiles[x, y].position.X -= playerSprite.speed;
-                                foggies[x, y].position.X -= playerSprite.speed;
                             }
 
-                            tiles[x, y].Update(gameTime);
-                            foggies[x, y].Update(gameTime);
-                        
+                            tiles[x, y].Update(gameTime);                        
+                    }
+                }
+
+                //update fog of war
+                for (int x = 0; x < maxFOG; x++)
+                {
+                    for (int y = 0; y < maxFOG; y++)
+                    {
+                        if ((kState.IsKeyDown(Keys.W) || kState.IsKeyDown(Keys.Up)) && foggies[x, 0].position.Y <= playerSprite.position.Y)
+                        {
+                            foggies[x, y].position.Y += playerSprite.speed;
+                        }
+                        else if ((kState.IsKeyDown(Keys.S) || kState.IsKeyDown(Keys.Down)) && foggies[x, maxFOG - 1].position.Y + foggies[x, maxFOG - 1].frameHeight >= playerSprite.position.Y + playerSprite.frameHeight)
+                        {
+                            foggies[x, y].position.Y -= playerSprite.speed;
+                        }
+                        else if ((kState.IsKeyDown(Keys.A) || kState.IsKeyDown(Keys.Left)) && foggies[0, y].position.X <= playerSprite.position.X)
+                        {
+                            foggies[x, y].position.X += playerSprite.speed;
+                        }
+                        else if ((kState.IsKeyDown(Keys.D) || kState.IsKeyDown(Keys.Right)) && foggies[maxFOG - 1, y].position.X + foggies[maxFOG - 1, y].frameWidth >= playerSprite.position.X + playerSprite.frameWidth)
+                        {
+                            foggies[x, y].position.X -= playerSprite.speed;
+                        }
+
+                        foggies[x, y].Update(gameTime);
                     }
                 }
 
