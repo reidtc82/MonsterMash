@@ -48,7 +48,7 @@ namespace monsterMash
         const int maxTiles = 64;
         Tile[,] tiles = new Tile[maxTiles,maxTiles];
 
-        const int maxFOG = maxTiles;
+        const int maxFOG = (maxTiles*2)+1;
         Tile[,] foggies = new Tile[maxFOG,maxFOG];
 
         const int maxFearticles = 128;
@@ -238,8 +238,8 @@ namespace monsterMash
                     foggies[x, y].LoadContent(this.Content, "textures/fogOfWar");
                     foggies[x, y].frameWidth = 64;//for now
                     foggies[x, y].frameHeight = 64;//for now
-                    foggies[x, y].position.X = foggies[x, y].frameWidth * x;
-                    foggies[x, y].position.Y = foggies[x, y].frameHeight * y;
+                    foggies[x, y].position.X = ((foggies[x, y].frameWidth/4) * x) - foggies[x, y].frameWidth / 4 ;
+                    foggies[x, y].position.Y = ((foggies[x, y].frameHeight/4) * y) - foggies[x, y].frameHeight / 4 ;
                     foggies[x, y].maxFrames = 0;//hopefully no animation for now as a test but I think I may animate eventually
                     foggies[x, y].frameIndex = 0;//probably wont have more than this for this sprite sheet but maybe if I want different terrain types
                 }
@@ -403,9 +403,9 @@ namespace monsterMash
             }
 
             //Draw fog tiles
-            for (int x = 0; x < maxTiles; x++)
+            for (int x = 0; x < maxFOG; x++)
             {
-                for (int y = 0; y < maxTiles; y++)
+                for (int y = 0; y < maxFOG; y++)
                 {
                     if (foggies[x, y].position.X > -64 && foggies[x, y].position.X < GraphicsDevice.Viewport.Width + 64 && foggies[x, y].position.Y > -64 && foggies[x, y].position.Y < GraphicsDevice.Viewport.Height + 64)
                     {
