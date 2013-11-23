@@ -38,18 +38,26 @@ namespace monsterMash
             public float visiblity;
         }
 
+        struct stageProps
+        {
+            public int sizeMap;
+            public int humanCount;
+            public int fearTime;
+        }
+
         monsterProps[] population = new monsterProps[20];
 
         private monsterProps tempProps;
+        private stageProps mapBase;
 
-        const int maxHumans = 128;
-        Human[] people = new Human[maxHumans];
+        int maxHumans;// = 128;
+        Human[] people;// = new Human[maxHumans];
 
-        const int maxTiles = 64;
-        Tile[,] tiles = new Tile[maxTiles,maxTiles];
+        int maxTiles;// = 64;
+        Tile[,] tiles;// = new Tile[maxTiles,maxTiles];
 
-        const int maxFOG = (maxTiles*2)+1;
-        Tile[,] foggies = new Tile[maxFOG,maxFOG];
+        int maxFOG;// = (maxTiles*2)+1;
+        Tile[,] foggies;// = new Tile[maxFOG,maxFOG];
 
         const int maxFearticles = 128;
         Particle[] fearticle = new Particle[maxFearticles];
@@ -92,7 +100,9 @@ namespace monsterMash
 
         private double roundStartTime;
         private double currRoundTime;
+
         private SpriteFont timerFont;
+        private SpriteFont yayFont;
 
         Random rand = new Random();
 
@@ -103,6 +113,19 @@ namespace monsterMash
         private bool scoreSet;
         private float randRad;
         private float randDis;
+
+        private bool canGo;
+        private bool drawMessage;
+        private bool good;
+        private int failure;
+        private int milestone;
+
+        String[] failures = new String[10];
+        String[] milestones = new String[100];
+
+        private int endRound;
+        private bool setEndRound;
+        private bool setStageProps;
 
         public Game1()
         {
@@ -123,33 +146,16 @@ namespace monsterMash
             score = 0;
             highestScore = 0;
             scoreSet = false;
+            drawMessage = false;
+            setEndRound = false;
+            setStageProps = false;
 
             playerSprite = new Monster();
 
-            //Init Tiles
-            for (int x = 0; x < maxTiles; x++)
-            {
-                for (int y = 0; y < maxTiles; y++)
-                {
-                    //Init ground tiles
-                    tiles[x, y] = new Tile();
-                }
-            }
-
-            //Init fog tiles
-            for (int x = 0; x < maxFOG; x++)
-            {
-                for (int y = 0; y < maxFOG; y++)
-                {
-                    foggies[x, y] = new Tile();
-                }
-            }
-
-            //Init people
-            for (int x = 0; x < maxHumans; x++)
-            {
-                people[x] = new Human();
-            }
+            //Init map base properties
+            mapBase.sizeMap = 16;
+            mapBase.humanCount = 512;
+            mapBase.fearTime = 50;
 
             mState = Mouse.GetState();
             lastKeyboardState = Keyboard.GetState();
@@ -192,6 +198,8 @@ namespace monsterMash
                 fearticle[i] = new Particle();
             }
 
+            initYayStrings();
+
             base.Initialize();
         }
 
@@ -214,51 +222,7 @@ namespace monsterMash
             playerSprite.maxHP = 100;//set up max hp for round. Will change eventually from algorithm.
             playerSprite.HP = playerSprite.maxHP;//set up hp for round
 
-            //loading map tiles
-            for (int x = 0; x < maxTiles; x++)
-            {
-                for (int y = 0; y < maxTiles; y++)
-                {
-                    //Load ground tiles
-                    tiles[x, y].LoadContent(this.Content, "textures/groundTile");
-                    tiles[x, y].frameWidth = 32;//for now
-                    tiles[x, y].frameHeight = 32;//for now
-                    tiles[x, y].position.X = tiles[x, y].frameWidth * x;
-                    tiles[x, y].position.Y = tiles[x, y].frameHeight * y;
-                    tiles[x, y].maxFrames = 0;//hopefully no animation for now as a test but I think I may animate eventually
-                    tiles[x, y].frameIndex = 0;//probably wont have more than this for this sprite sheet but maybe if I want different terrain types
-                }
-            }
-
-            //load fog tiles
-            for (int x = 0; x < maxFOG; x++)
-            {
-                for (int y = 0; y < maxFOG; y++)
-                {
-                    foggies[x, y].LoadContent(this.Content, "textures/fogOfWar");
-                    foggies[x, y].frameWidth = 64;//for now
-                    foggies[x, y].frameHeight = 64;//for now
-                    foggies[x, y].position.X = ((foggies[x, y].frameWidth/4) * x) - foggies[x, y].frameWidth / 4 ;
-                    foggies[x, y].position.Y = ((foggies[x, y].frameHeight/4) * y) - foggies[x, y].frameHeight / 4 ;
-                    foggies[x, y].maxFrames = 0;//hopefully no animation for now as a test but I think I may animate eventually
-                    foggies[x, y].frameIndex = 0;//probably wont have more than this for this sprite sheet but maybe if I want different terrain types
-                }
-            }
-
-            //load humans
-            for (int x = 0; x < maxHumans; x++)
-            {
-                int randX = rand.Next((int)tiles[maxTiles-1,maxTiles-1].position.X);
-                int randY = rand.Next((int)tiles[maxTiles-1,maxTiles-1].position.Y);
-                int randIndex = rand.Next(4);
-                people[x].LoadContent(this.Content, "textures/humans");
-                people[x].frameWidth = 32;
-                people[x].frameHeight = 64;
-                people[x].position.X = randX;
-                people[x].position.Y = randY;
-                people[x].maxFrames = 3;
-                people[x].frameIndexOrigin = randIndex * 3;
-            }
+            loadStage(mapBase.sizeMap, mapBase.humanCount, mapBase.fearTime);
 
             //load fearticles
             for (int i = 0; i < maxFearticles; i++)
@@ -275,6 +239,7 @@ namespace monsterMash
             exitButton = Content.Load<Texture2D>(@"textures/exitButton");
             backButton = Content.Load<Texture2D>(@"textures/backButton");
             timerFont = Content.Load<SpriteFont>(@"Fonts/timerFont");
+            yayFont = Content.Load<SpriteFont>(@"Fonts/yayFont");
 
             stamBarLeftEnd = Content.Load<Texture2D>(@"textures/stamBarLeft");
             stamBarCenterPart = Content.Load<Texture2D>(@"textures/stamBarCenter");
@@ -452,6 +417,18 @@ namespace monsterMash
             
             spriteBatch.DrawString(timerFont, "High Score:", new Vector2((int)(GraphicsDevice.Viewport.Width / 10) + 160, (int)GraphicsDevice.Viewport.Height / 12), Color.Yellow);
             spriteBatch.DrawString(timerFont, highestScore.ToString(), new Vector2((int)(GraphicsDevice.Viewport.Width / 10) + 275, (int)GraphicsDevice.Viewport.Height / 12), Color.Yellow);
+
+            if (drawMessage)
+            {
+                if (good)
+                {
+                    spriteBatch.DrawString(yayFont, milestones[milestone], new Vector2(64, (int)(GraphicsDevice.Viewport.Height / 2)), Color.Aqua);
+                }
+                else
+                {
+                    spriteBatch.DrawString(yayFont, failures[failure], new Vector2(64, (int)(GraphicsDevice.Viewport.Height / 2)), Color.Red);
+                }
+            }
 
             //copyright info ©
             spriteBatch.DrawString(timerFont, "© 2013 Reid Case", new Vector2(GraphicsDevice.Viewport.Width * 0.75f, GraphicsDevice.Viewport.Height * 0.9f), Color.Yellow);
@@ -660,22 +637,22 @@ namespace monsterMash
                             score++;
                             if (people[x].humanState == 0 || people[x].humanState == 4)
                             {
-                                people[x].duration = 200;
+                                people[x].fearDuration = mapBase.fearTime;
                                 people[x].humanState = 9;
                             }
                             else if (people[x].humanState == 1 || people[x].humanState == 5)
                             {
-                                people[x].duration = 200;
+                                people[x].fearDuration = mapBase.fearTime;
                                 people[x].humanState = 8;
                             }
                             else if (people[x].humanState == 2 || people[x].humanState == 6)
                             {
-                                people[x].duration = 200;
+                                people[x].fearDuration = mapBase.fearTime;
                                 people[x].humanState = 11;
                             }
                             else if (people[x].humanState == 3 || people[x].humanState == 7)
                             {
-                                people[x].duration = 200;
+                                people[x].fearDuration = mapBase.fearTime;
                                 people[x].humanState = 10;
                             }
                             people[x].scared = true;
@@ -723,19 +700,91 @@ namespace monsterMash
                 }
 
             }else{
-                if (score > highestScore)
-                {
-                    highestScore = score;
+                if(!setEndRound){
+                    endRound = 0;
+                    setEndRound = true;
                 }
-                //dump back to pre game section
-                runGACycle = false;
-                scoreSet = false;
-                screen = 2;
+                //apply reward system here and difficulty 
+                if (!canGo)
+                {
+
+                if (score >= highestScore)
+                {
+                    good = true;
+                    if ((score - highestScore) >= 5)
+                    {
+                        //reward for milestone
+                        if (score - highestScore >= 99)
+                        {
+                            milestone = 99;
+                        }
+                        else
+                        {
+                            milestone = score - highestScore;
+                        }
+                        canGo = false;
+                        //difficulty up
+                        if (!setStageProps)
+                        {
+                            setStageProps = true;
+                            mapBase.sizeMap += 2;
+                            mapBase.humanCount--;
+                            mapBase.fearTime += 5;
+                        }
+                    }
+                    else
+                    {
+                        milestone = 0;
+                        canGo = false;
+                    }
+                }
+                else
+                {
+                    good = false;
+                    if (highestScore - score >= 9)
+                    {
+                        failure = 9;
+                        canGo = false;
+                    }
+                    else
+                    {
+                        failure = highestScore - score;
+                        canGo = false;
+                    }
+                }
+
+                
+                    drawMessage = true;
+                    if (endRound >= 5000)
+                    {
+                        canGo = true;
+                    }
+                    endRound += gameTime.ElapsedGameTime.Milliseconds;
+                }
+                else
+                {
+                    if (score > highestScore)
+                    {
+                        highestScore = score;
+                    }
+                    //dump back to pre game section
+                    drawMessage = false;
+                    runGACycle = false;
+                    scoreSet = false;
+                    screen = 2;
+                    endRound = 0;
+                }
             }
         }
 
         private void updatePreGame(GameTime gameTime)
         {
+            //set up stage again
+            loadStage(mapBase.sizeMap,mapBase.humanCount,mapBase.fearTime);
+            setEndRound = false;
+            setStageProps = false;
+            canGo = false;
+
             if (!scoreSet)
             {
                 population[0].thisScore = score;
@@ -1068,6 +1117,208 @@ namespace monsterMash
             {
                 exitButtonRect = new Rectangle(0, 0, exitButton.Width / 2, exitButton.Height);
             }
+        }
+
+        private void loadStage(int mapSize, int humanCount, int fearTime)
+        {
+            maxTiles = mapBase.sizeMap;
+            tiles = new Tile[maxTiles, maxTiles];
+
+            maxFOG = (maxTiles * 2) + 1;
+            foggies = new Tile[maxFOG, maxFOG];
+
+            //Init Tiles
+            for (int x = 0; x < maxTiles; x++)
+            {
+                for (int y = 0; y < maxTiles; y++)
+                {
+                    //Init ground tiles
+                    tiles[x, y] = new Tile();
+                }
+            }
+
+            //Init fog tiles
+            for (int x = 0; x < maxFOG; x++)
+            {
+                for (int y = 0; y < maxFOG; y++)
+                {
+                    foggies[x, y] = new Tile();
+                }
+            }
+
+            //Init people
+
+            maxHumans = mapBase.humanCount;
+            people = new Human[maxHumans];
+
+            for (int x = 0; x < maxHumans; x++)
+            {
+                people[x] = new Human();
+            }
+
+            //loading map tiles
+            for (int x = 0; x < maxTiles; x++)
+            {
+                for (int y = 0; y < maxTiles; y++)
+                {
+                    //Load ground tiles
+                    tiles[x, y].LoadContent(this.Content, "textures/groundTile");
+                    tiles[x, y].frameWidth = 32;//for now
+                    tiles[x, y].frameHeight = 32;//for now
+                    tiles[x, y].position.X = tiles[x, y].frameWidth * x;
+                    tiles[x, y].position.Y = tiles[x, y].frameHeight * y;
+                    tiles[x, y].maxFrames = 0;//hopefully no animation for now as a test but I think I may animate eventually
+                    tiles[x, y].frameIndex = 0;//probably wont have more than this for this sprite sheet but maybe if I want different terrain types
+                }
+            }
+
+            //load fog tiles
+            for (int x = 0; x < maxFOG; x++)
+            {
+                for (int y = 0; y < maxFOG; y++)
+                {
+                    foggies[x, y].LoadContent(this.Content, "textures/fogOfWar");
+                    foggies[x, y].frameWidth = 64;//for now
+                    foggies[x, y].frameHeight = 64;//for now
+                    foggies[x, y].position.X = ((foggies[x, y].frameWidth / 4) * x) - foggies[x, y].frameWidth / 4;
+                    foggies[x, y].position.Y = ((foggies[x, y].frameHeight / 4) * y) - foggies[x, y].frameHeight / 4;
+                    foggies[x, y].maxFrames = 0;//hopefully no animation for now as a test but I think I may animate eventually
+                    foggies[x, y].frameIndex = 0;//probably wont have more than this for this sprite sheet but maybe if I want different terrain types
+                }
+            }
+
+            //load humans
+            for (int x = 0; x < maxHumans; x++)
+            {
+                int randX = rand.Next((int)tiles[maxTiles - 1, maxTiles - 1].position.X);
+                int randY = rand.Next((int)tiles[maxTiles - 1, maxTiles - 1].position.Y);
+                int randIndex = rand.Next(4);
+                people[x].LoadContent(this.Content, "textures/humans");
+                people[x].frameWidth = 32;
+                people[x].frameHeight = 64;
+                people[x].position.X = randX;
+                people[x].position.Y = randY;
+                people[x].maxFrames = 3;
+                people[x].frameIndexOrigin = randIndex * 3;
+                people[x].fearDuration = mapBase.fearTime;
+            }
+        }
+
+        private void initYayStrings()
+        {
+            //init failures
+            failures[0] = "meh...";
+            failures[1] = "Not scary enough";
+            failures[2] = "Deficient in fear excretion";
+            failures[3] = "You'd do better as a fairy";
+            failures[4] = "Turkeys scare rocks better than you scare people";
+            failures[5] = "Your scaring career is sinking like a lead balloon";
+            failures[6] = "Why are you still playing?";
+            failures[7] = "Total lack of coordination";
+            failures[8] = "Your children will lose all their Facebook friends because of you";
+            failures[9] = "You are an ULTIMATE FAILURE!!!!!";
+            
+            //init milestones
+            milestones[0] = "Time is up";
+            milestones[1] = "standard";
+            milestones[2] = "Acceptable";
+            milestones[3] = "Decent";
+            milestones[4] = "Better";
+            milestones[5] = "Pretty Good";
+            milestones[6] = "Good";
+            milestones[7] = "Getting there";
+            milestones[8] = "Way to go!";
+            milestones[9] = "Worthy";
+            milestones[10] = "Nice";
+            milestones[11] = "Snake Eyes";
+            milestones[12] = "Fearful Performance";
+            milestones[13] = "Satisfactory";
+            milestones[14] = "Kudos";
+            milestones[15] = "Congratulations";
+            milestones[16] = "Measurable Achievement";
+            milestones[17] = "Stroke it!";
+            milestones[18] = "Scare it up!";
+            milestones[19] = "Do the deed";
+            milestones[20] = "Wow!";
+            milestones[21] = "AHHHHHHHH!!!!!!!";
+            milestones[22] = "You brush your teeth with Harley Davidsons";
+            milestones[23] = "No children will be born as you rein";
+            milestones[24] = "Cast Fear!";
+            milestones[25] = "Squirrels Dash from Your Presence";
+            milestones[26] = "Wonderful";
+            milestones[27] = "Host of Halloween Parties";
+            milestones[28] = "Shivering souls";
+            milestones[29] = "Skeletal Cracking";
+            milestones[30] = "Better, Wow!";
+            milestones[31] = "Island Sinker";
+            milestones[32] = "Skull Crusher";
+            milestones[33] = "Grrrreat";
+            milestones[34] = "Woof!";
+            milestones[35] = "The best!";
+            milestones[36] = "Heart Eater";
+            milestones[37] = "Intern Smasher";
+            milestones[38] = "Monster";
+            milestones[39] = "No Peace";
+            milestones[40] = "Effortless Frightening";
+            milestones[41] = "Extreme Shock";
+            milestones[42] = "Faint";
+            milestones[43] = "Like taking candy from a baby";
+            milestones[44] = "How did you get so good?";
+            milestones[45] = "You type on the keyboard";
+            milestones[46] = "That's how to do it!";
+            milestones[47] = "Sleeping Dragon Whips its Tail";
+            milestones[48] = "Stop for me, please";
+            milestones[49] = "Too much!";
+            milestones[50] = "Masterpiece of fear";
+            milestones[51] = "Paint their blood on the curtains";
+            milestones[52] = "Their hopes are gone";
+            milestones[53] = "Degauss their faces!";
+            milestones[54] = "Infectious";
+            milestones[55] = "Crows Mothers Cry at the Thought of You";
+            milestones[56] = "Howl at the moon";
+            milestones[57] = "The road to devastation";
+            milestones[58] = "Zombie-like Consumption";
+            milestones[59] = "Hatred";
+            milestones[60] = "Reid is Awesome!";
+            milestones[61] = "Your success brings value to us all";
+            milestones[62] = "Play the music";
+            milestones[63] = "Dig their graves";
+            milestones[64] = "Loudly the dog whined";
+            milestones[65] = "Startling gift";
+            milestones[66] = "Impossible Manifestation of Surprise";
+            milestones[67] = "Rise form the catacomb";
+            milestones[68] = "Molten iron bleeds from the cold heart";
+            milestones[69] = "Alarm";
+            milestones[70] = "Prodigy";
+            milestones[71] = "Vicious";
+            milestones[72] = "Unify societies to bring total fear to all";
+            milestones[73] = "Our children should run";
+            milestones[74] = "Rats and Bats";
+            milestones[75] = "Potent Panic Placement!";
+            milestones[76] = "Poisonous Protrusion";
+            milestones[77] = "Drain the lizard";
+            milestones[78] = "Cup of tea";
+            milestones[79] = "Drop the refrigerator!";
+            milestones[80] = "Official Fear Progenitor";
+            milestones[81] = "Flatten the world!";
+            milestones[82] = "Gasoline breathing fire lizard!";
+            milestones[83] = "King Reign";
+            milestones[84] = "Spill the salt!";
+            milestones[85] = "Measure the Cow";
+            milestones[86] = "Black Cats";
+            milestones[87] = "Big Dog!";
+            milestones[88] = "Hammer Fright into Their Brains";
+            milestones[89] = "Demonic Mannerism";
+            milestones[90] = "Slap them with the glove";
+            milestones[91] = "They sacrifice to you";
+            milestones[92] = "Clad in the Tears of One Legged Infants";
+            milestones[93] = "May your efforts cascade through time";
+            milestones[94] = "Fright Night";
+            milestones[95] = "Holy Panic";
+            milestones[96] = "Infinite Progress";
+            milestones[97] = "All hail our fearful master!";
+            milestones[98] = "The Fear Prevails over Solace";
+            milestones[99] = "Fear and Mortification Precede You, Your Victims Lathered in Terror!";
         }
     }
 }

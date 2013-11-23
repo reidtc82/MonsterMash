@@ -50,6 +50,11 @@ namespace monsterMash
             get;
             set;
         }
+        public int fearDuration
+        {
+            get;
+            set;
+        }
 
         public bool scared
         {
@@ -71,7 +76,7 @@ namespace monsterMash
             if (scared)
             {
                 speed = 2;
-                if (duration > 0)
+                if (fearDuration > 0)
                 {
                     frameIndex = frameIndexOrigin + 2;
                     if (humanState == 8)
@@ -91,7 +96,7 @@ namespace monsterMash
                         position.X+=speed;
                     }
 
-                    duration--;
+                    fearDuration--;
                 }
                 else
                 {
