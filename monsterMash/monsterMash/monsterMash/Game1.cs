@@ -22,6 +22,11 @@ namespace monsterMash
         MouseState mState;
         KeyboardState lastKeyboardState;
 
+        SoundEffect buttonClick;
+        SoundEffectInstance buttonInstance;
+        SoundEffect monsterScream;
+        SoundEffectInstance monsterScreamInstance;
+
         Monster playerSprite;
 
         struct monsterProps
@@ -247,6 +252,16 @@ namespace monsterMash
             stamBarFill = Content.Load<Texture2D>(@"textures/stamBar");
 
             stamBarLeftBox = new Rectangle((int)(GraphicsDevice.Viewport.Width * 0.5f), (int)(GraphicsDevice.Viewport.Height * 0.08f), stamBarLeftEnd.Width, stamBarLeftEnd.Height);
+
+            //Sounds
+            buttonClick = Content.Load<SoundEffect>(@"Audio/Waves/button");
+            buttonInstance = buttonClick.CreateInstance();
+            buttonInstance.IsLooped = false;
+
+            monsterScream = Content.Load<SoundEffect>(@"Audio/Waves/monster");
+            monsterScreamInstance = monsterScream.CreateInstance();
+            monsterScreamInstance.IsLooped = false;
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -699,6 +714,14 @@ namespace monsterMash
                     fearticle[i].Update(gameTime);
                 }
 
+                //Monster Sound
+                if (playerSprite.isScary)
+                {
+                    monsterScreamInstance.Volume = 1f;
+                    monsterScreamInstance.Play();
+                    
+                }
+
             }else{
                 if(!setEndRound){
                     endRound = 0;
@@ -904,11 +927,11 @@ namespace monsterMash
                         int rAttr;
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 20)
+                        if (rAttr <= 5)
                         {
                             population[rPopIndex].range += 10;
                         }
-                        else if (rAttr > 20 && rAttr <= 40)
+                        else if (rAttr > 5 && rAttr <= 10)
                         {
                             if (population[rPopIndex].range > 11)
                             {
@@ -917,21 +940,21 @@ namespace monsterMash
                         }
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 20)
+                        if (rAttr <= 5)
                         {
                             population[rPopIndex].spd += 0.2f;
                         }
-                        else if (rAttr > 20 && rAttr <= 40)
+                        else if (rAttr > 5 && rAttr <= 10)
                         {
                             population[rPopIndex].spd -= 0.2f;
                         }
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 20)
+                        if (rAttr <= 5)
                         {
                             population[rPopIndex].maxStam += 0.8f;
                         }
-                        else if (rAttr > 20 && rAttr <= 40)
+                        else if (rAttr > 5 && rAttr <= 10)
                         {
                             if(population[rPopIndex].maxStam >= 0.9f)
                             {
@@ -940,41 +963,41 @@ namespace monsterMash
                         }
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 20)
+                        if (rAttr <= 5)
                         {
                             population[rPopIndex].cost += 0.5f;
                         }
-                        else if (rAttr > 20 && rAttr <= 40)
+                        else if (rAttr > 5 && rAttr <= 10)
                         {
                             population[rPopIndex].cost -= 0.5f;
                         }
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 20)
+                        if (rAttr <= 5)
                         {
                             population[rPopIndex].sReg += 0.2f;
                         }
-                        else if (rAttr > 20 && rAttr <= 40)
+                        else if (rAttr > 5 && rAttr <= 10)
                         {
                             population[rPopIndex].sReg -= 0.2f;
                         }
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 20)
+                        if (rAttr <= 5)
                         {
                             population[rPopIndex].rateScare += 0.5f;
                         }
-                        else if (rAttr > 20 && rAttr <= 40)
+                        else if (rAttr > 5 && rAttr <= 10)
                         {
                             population[rPopIndex].rateScare -= 0.5f;
                         }
 
                         rAttr = rand.Next(100);
-                        if (rAttr <= 20)
+                        if (rAttr <= 5)
                         {
                             population[rPopIndex].visiblity += 32;
                         }
-                        else if (rAttr > 20 && rAttr <= 40)
+                        else if (rAttr > 5 && rAttr <= 10)
                         {
                             if (population[rPopIndex].visiblity >= 33)
                             {
@@ -1013,9 +1036,12 @@ namespace monsterMash
 
             if (mouseRect.Intersects(startButtonBBox))
             {
+
                 startButtonRect = new Rectangle(startButton.Width / 2, 0, startButton.Width / 2, startButton.Height);
                 if (mState.LeftButton == ButtonState.Pressed && !mouseRect.Intersects(backButtonBBox))
                 {
+                    buttonInstance.Volume = 0.75f;
+                    buttonInstance.Play();
                     screen = 3;
                     roundStartTime = gameTime.TotalGameTime.TotalSeconds;
                     //zero out score for next round
@@ -1029,9 +1055,12 @@ namespace monsterMash
 
             if (mouseRect.Intersects(backButtonBBox))
             {
+
                 backButtonRect = new Rectangle(backButton.Width / 2, 0, backButton.Width / 2, backButton.Height);
                 if (mState.LeftButton == ButtonState.Pressed && !mouseRect.Intersects(startButtonBBox))
                 {
+                    buttonInstance.Volume = 0.75f;
+                    buttonInstance.Play();
                     screen = 0;
                 }
             }
@@ -1054,9 +1083,12 @@ namespace monsterMash
 
             if (mouseRect.Intersects(backButtonBBox))
             {
+
                 backButtonRect = new Rectangle(backButton.Width / 2, 0, backButton.Width / 2, backButton.Height);
                 if (mState.LeftButton == ButtonState.Pressed)
                 {
+                    buttonInstance.Volume = 0.75f;
+                    buttonInstance.Play();
                     screen = 0;
                 }
             }else{
@@ -1081,9 +1113,12 @@ namespace monsterMash
             
             if (mouseRect.Intersects(startButtonBBox))
             {
+                
                 startButtonRect = new Rectangle(startButton.Width / 2, 0, startButton.Width / 2, startButton.Height);
                 if (mState.LeftButton == ButtonState.Pressed && !mouseRect.Intersects(instButtonBBox))
                 {
+                    buttonInstance.Volume = 0.75f;
+                    buttonInstance.Play();
                     screen = 2;
                 }
             }
@@ -1094,9 +1129,12 @@ namespace monsterMash
             
             if (mouseRect.Intersects(instButtonBBox))
             {
+                
                 instButtonRect = new Rectangle(instButton.Width / 2, 0, instButton.Width / 2, instButton.Height);
                 if (mState.LeftButton == ButtonState.Pressed && !mouseRect.Intersects(exitButtonBBox) && !mouseRect.Intersects(startButtonBBox))
                 {
+                    buttonInstance.Volume = 0.75f;
+                    buttonInstance.Play();
                     screen = 1;
                 }
             }
@@ -1107,9 +1145,12 @@ namespace monsterMash
             
             if (mouseRect.Intersects(exitButtonBBox))
             {
+                
                 exitButtonRect = new Rectangle(exitButton.Width / 2, 0, exitButton.Width / 2, exitButton.Height);
                 if(mState.LeftButton == ButtonState.Pressed && !mouseRect.Intersects(instButtonBBox))
                 {
+                    buttonInstance.Volume = 0.75f;
+                    buttonInstance.Play();
                     this.Exit();
                 }
             }
@@ -1216,7 +1257,7 @@ namespace monsterMash
             failures[6] = "Why are you still playing?";
             failures[7] = "Total lack of coordination";
             failures[8] = "Your children will lose all their Facebook friends because of you";
-            failures[9] = "You are an ULTIMATE FAILURE!!!!!";
+            failures[9] = "ULTIMATE FAIL!!!!!";
             
             //init milestones
             milestones[0] = "Time is up";
